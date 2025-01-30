@@ -83,7 +83,7 @@ def _set_new_caller_id(agi: agid.FastAGI, display_name: str, cid_number: str) ->
 
 
 def _set_reverse_lookup_variable(agi: agid.FastAGI, fields: dict[str, str]) -> None:
-    agi.set_variable("XIVO_REVERSE_LOOKUP", _create_reverse_lookup_variable(fields))
+    agi.set_variable(dv.REVERSE_LOOKUP, _create_reverse_lookup_variable(fields))
 
 
 def _create_reverse_lookup_variable(fields: dict[str, str]) -> str:
