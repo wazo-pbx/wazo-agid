@@ -35,7 +35,7 @@ def callerid_forphones(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -
         if callee_info is None:
             user_uuid = FAKE_WAZO_USER_UUID
         else:
-            user_uuid = callee_info.xivo_user_uuid
+            user_uuid = callee_info.user_uuid
 
         tenant_uuid = agi.get_variable('WAZO_TENANT_UUID')
         # It is not possible to associate a profile to a reverse configuration in the web

@@ -96,7 +96,7 @@ class TestCallerIdForPhone(unittest.TestCase):
             'agi_callerid': '5555551234',
         }
         self.dird_client.directories.reverse.return_value = {'display': None}
-        mock_dao.find_by_incall_id.return_value.xivo_user_uuid = 'user_uuid'
+        mock_dao.find_by_incall_id.return_value.user_uuid = 'user_uuid'
 
         self.agi.get_variable.side_effect = [0, sentinel.agi_variable]
 
@@ -123,7 +123,7 @@ class TestCallerIdForPhone(unittest.TestCase):
             'display': 'Bob',
             'fields': lookup_result,
         }
-        mock_dao.find_by_incall_id.return_value.xivo_user_uuid = 'user_uuid'
+        mock_dao.find_by_incall_id.return_value.user_uuid = 'user_uuid'
 
         self.agi.get_variable.side_effect = [0, sentinel.agi_variable]
 
