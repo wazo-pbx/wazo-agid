@@ -36,7 +36,7 @@ def _phone_set_callrecord(agi, cursor, args):
     calling_user = _get_calling_user(agi, cursor)
     calling_user.toggle_feature('callrecord')
 
-    agi.set_variable('XIVO_CALLRECORDENABLED', int(calling_user.call_record_enabled))
+    agi.set_variable(dv.CALLRECORDENABLED, int(calling_user.call_record_enabled))
     agi.set_variable(dv.USERID_OWNER, calling_user.id)
 
 
