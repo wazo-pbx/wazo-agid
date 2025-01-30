@@ -1,4 +1,4 @@
-# Copyright 2008-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2008-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 def agent_get_options(agi: FastAGI, cursor: DictCursor, args: list[str]) -> None:
-    agi.set_variable('XIVO_AGENTEXISTS', 0)
+    agi.set_variable('WAZO_AGENTEXISTS', 0)
 
     try:
         tenant_uuid = args[0]
@@ -32,10 +32,10 @@ def agent_get_options(agi: FastAGI, cursor: DictCursor, args: list[str]) -> None
         agi.verbose(str(e))
         return
 
-    agi.set_variable('XIVO_AGENTEXISTS', 1)
-    agi.set_variable('XIVO_AGENTPASSWD', agent.passwd or '')
-    agi.set_variable('XIVO_AGENTID', agent.id)
-    agi.set_variable('XIVO_AGENTNUM', agent.number)
+    agi.set_variable('WAZO_AGENTEXISTS', 1)
+    agi.set_variable('WAZO_AGENTPASSWD', agent.passwd or '')
+    agi.set_variable('WAZO_AGENTID', agent.id)
+    agi.set_variable('WAZO_AGENTNUM', agent.number)
 
     if agent.language:
         agi.set_variable('CHANNEL(language)', agent.language)

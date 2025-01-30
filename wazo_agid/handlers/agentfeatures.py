@@ -1,4 +1,4 @@
-# Copyright 2013-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2013-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid import objects
 from wazo_agid.handlers.handler import Handler
 
@@ -36,7 +37,7 @@ class AgentFeatures(Handler):
 
     def _set_agent_interface(self) -> None:
         try:
-            self._agi.set_variable('XIVO_AGENT_INTERFACE', self._get_agent_device())
+            self._agi.set_variable(dv.AGENT_INTERFACE, self._get_agent_device())
         except LookupError as e:
             self._agi.dp_break(e)
 
@@ -62,12 +63,12 @@ class AgentFeatures(Handler):
             preprocess_subroutine = self.agent.preprocess_subroutine
         else:
             preprocess_subroutine = ''
-        self._agi.set_variable('XIVO_AGENTPREPROCESS_SUBROUTINE', preprocess_subroutine)
+        self._agi.set_variable(dv.AGENTPREPROCESS_SUBROUTINE, preprocess_subroutine)
 
     def _set_queue_call_options(self) -> None:
         queue_options = self._agi.get_variable('WAZO_QUEUEOPTIONS')
         queue_call_options = self._extract_queue_call_options(queue_options)
-        self._agi.set_variable('XIVO_QUEUECALLOPTIONS', queue_call_options)
+        self._agi.set_variable(dv.QUEUECALLOPTIONS, queue_call_options)
 
     def _extract_queue_call_options(self, queue_options: str) -> str:
         queue_options = re.sub(r'\(.*?\)', '', queue_options)

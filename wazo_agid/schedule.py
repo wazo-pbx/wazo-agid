@@ -1,10 +1,12 @@
-# Copyright 2010-2022 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2010-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import datetime
 import re
 
 import pytz
+
+from wazo_agid import dialplan_variables as dv
 
 
 class Schedule:
@@ -62,10 +64,10 @@ class ScheduleAction:
         self.actionarg2 = actionarg2
 
     def set_variables_in_agi(self, agi):
-        agi.set_variable('XIVO_FWD_SCHEDULE_OUT_ACTION', self.action)
-        agi.set_variable('XIVO_FWD_SCHEDULE_OUT_ACTIONARG1', self.actionarg1)
+        agi.set_variable(dv.FWD_SCHEDULE_OUT_ACTION, self.action)
+        agi.set_variable(dv.FWD_SCHEDULE_OUT_ACTIONARG1, self.actionarg1)
         if self.actionarg2 is not None:
-            agi.set_variable('XIVO_FWD_SCHEDULE_OUT_ACTIONARG2', self.actionarg2)
+            agi.set_variable(dv.FWD_SCHEDULE_OUT_ACTIONARG2, self.actionarg2)
 
 
 class ScheduleBuilder:

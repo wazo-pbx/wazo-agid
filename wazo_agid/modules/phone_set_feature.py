@@ -1,4 +1,4 @@
-# Copyright 2006-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2006-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -7,7 +7,9 @@ import logging
 
 from psycopg2.extras import DictCursor
 
-from wazo_agid import agid, objects
+from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
+from wazo_agid import objects
 
 logger = logging.getLogger(__name__)
 
@@ -34,8 +36,8 @@ def _phone_set_callrecord(agi, cursor, args):
     calling_user = _get_calling_user(agi, cursor)
     calling_user.toggle_feature('callrecord')
 
-    agi.set_variable('XIVO_CALLRECORDENABLED', int(calling_user.call_record_enabled))
-    agi.set_variable('XIVO_USERID_OWNER', calling_user.id)
+    agi.set_variable(dv.CALLRECORDENABLED, int(calling_user.call_record_enabled))
+    agi.set_variable(dv.USERID_OWNER, calling_user.id)
 
 
 def _get_calling_user(agi, cursor):
@@ -53,8 +55,8 @@ def _phone_set_dnd(agi, cursor, args):
     except Exception as e:
         logger.error('Error during setting dnd : %s', e)
     else:
-        agi.set_variable('XIVO_DNDENABLED', int(new_value['enabled']))
-        agi.set_variable('XIVO_USERID_OWNER', user_id)
+        agi.set_variable(dv.DNDENABLED, int(new_value['enabled']))
+        agi.set_variable(dv.USERID_OWNER, user_id)
 
 
 def _phone_set_incallfilter(agi, cursor, args):
@@ -64,8 +66,8 @@ def _phone_set_incallfilter(agi, cursor, args):
     except Exception as e:
         logger.error('Error during setting incallfilter : %s', e)
     else:
-        agi.set_variable('XIVO_INCALLFILTERENABLED', int(new_value['enabled']))
-        agi.set_variable('XIVO_USERID_OWNER', user_id)
+        agi.set_variable(dv.INCALLFILTERENABLED, int(new_value['enabled']))
+        agi.set_variable(dv.USERID_OWNER, user_id)
 
 
 def _phone_set_vm(agi, cursor, args):
@@ -81,8 +83,8 @@ def _phone_set_vm(agi, cursor, args):
 
     user.toggle_feature('enablevoicemail')
 
-    agi.set_variable('XIVO_VMENABLED', user.enablevoicemail)
-    agi.set_variable('XIVO_USERID_OWNER', user.id)
+    agi.set_variable(dv.VMENABLED, user.enablevoicemail)
+    agi.set_variable(dv.USERID_OWNER, user.id)
 
 
 def _user_set_service(agi, user_id, service_name):
@@ -109,19 +111,19 @@ def _get_context_of_calling_user(agi):
 def _phone_set_unc(agi, cursor, args):
     enabled = _phone_set_forward(agi, 'unconditional', args)
     if enabled is not None:
-        agi.set_variable('XIVO_UNCENABLED', int(enabled))
+        agi.set_variable(dv.UNCENABLED, int(enabled))
 
 
 def _phone_set_rna(agi, cursor, args):
     enabled = _phone_set_forward(agi, 'noanswer', args)
     if enabled is not None:
-        agi.set_variable('XIVO_RNAENABLED', int(enabled))
+        agi.set_variable(dv.RNAENABLED, int(enabled))
 
 
 def _phone_set_busy(agi, cursor, args):
     enabled = _phone_set_forward(agi, 'busy', args)
     if enabled is not None:
-        agi.set_variable('XIVO_BUSYENABLED', int(enabled))
+        agi.set_variable(dv.BUSYENABLED, int(enabled))
 
 
 def _phone_set_forward(agi, forward_name, args):
@@ -132,7 +134,7 @@ def _phone_set_forward(agi, forward_name, args):
         logger.error('Error during setting %s: %s', forward_name, e)
         return None
     else:
-        agi.set_variable('XIVO_USERID_OWNER', user_id)
+        agi.set_variable(dv.USERID_OWNER, user_id)
         return result['enabled']
 
 

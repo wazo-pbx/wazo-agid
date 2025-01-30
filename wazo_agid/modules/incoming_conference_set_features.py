@@ -1,4 +1,4 @@
-# Copyright 2016-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2016-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -19,8 +19,8 @@ def incoming_conference_set_features(
     except ValueError as e:
         agi.dp_break(str(e))
 
-    menu = 'xivo-default-user-menu'
-    user_profile = f'xivo-user-profile-{conference.id}'
+    menu = 'wazo-default-user-menu'
+    user_profile = f'wazo-user-profile-{conference.id}'
     if conference.pin:
         for _ in range(4):
             agi.answer()
@@ -28,8 +28,8 @@ def incoming_conference_set_features(
             if pin == conference.pin:
                 break
             elif pin == conference.admin_pin:
-                menu = 'xivo-default-admin-menu'
-                user_profile = f'xivo-admin-profile-{conference.id}'
+                menu = 'wazo-default-admin-menu'
+                user_profile = f'wazo-admin-profile-{conference.id}'
                 break
             else:
                 agi.stream_file('conf-invalidpin')
@@ -42,7 +42,7 @@ def incoming_conference_set_features(
     agi.set_variable('WAZO_CONFBRIDGE_ID', conference.id)
     agi.set_variable('WAZO_CONFBRIDGE_TENANT_UUID', conference.tenant_uuid)
     agi.set_variable(
-        'WAZO_CONFBRIDGE_BRIDGE_PROFILE', f'xivo-bridge-profile-{conference.id}'
+        'WAZO_CONFBRIDGE_BRIDGE_PROFILE', f'wazo-bridge-profile-{conference.id}'
     )
     agi.set_variable('WAZO_CONFBRIDGE_USER_PROFILE', user_profile)
     agi.set_variable('WAZO_CONFBRIDGE_MENU', menu)

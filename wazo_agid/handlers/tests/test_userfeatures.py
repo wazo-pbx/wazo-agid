@@ -1,4 +1,4 @@
-# Copyright 2013-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2013-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import unittest
@@ -7,6 +7,7 @@ from unittest.mock import Mock, call, patch, sentinel
 from hamcrest import assert_that, contains_exactly, equal_to
 from requests.exceptions import HTTPError
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid import objects
 from wazo_agid.handlers.userfeatures import UserFeatures
 
@@ -223,14 +224,14 @@ class TestUserFeatures(_BaseTestCase):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
         with patch.multiple(
             userfeatures,
-            _set_xivo_user_name=Mock(),
-            _set_xivo_redirecting_info=Mock(),
+            _set_user_name=Mock(),
+            _set_redirecting_info=Mock(),
             _set_wazo_uuid=Mock(),
         ):
             userfeatures._set_user()
 
             self.assertTrue(userfeatures._user is None)
-            self.assertEqual(userfeatures._set_xivo_user_name.call_count, 0)  # type: ignore
+            self.assertEqual(userfeatures._set_user_name.call_count, 0)  # type: ignore
 
             userfeatures._dstid = self._variables['WAZO_DSTID']
 
@@ -239,8 +240,8 @@ class TestUserFeatures(_BaseTestCase):
 
                 userfeatures._set_user()
 
-                userfeatures._set_xivo_user_name.assert_called_once()  # type: ignore
-                userfeatures._set_xivo_redirecting_info.assert_called_once()  # type: ignore
+                userfeatures._set_user_name.assert_called_once()  # type: ignore
+                userfeatures._set_redirecting_info.assert_called_once()  # type: ignore
                 userfeatures._set_wazo_uuid.assert_called_once()  # type: ignore
                 self.assertTrue(userfeatures._user is not None)
                 self.assertTrue(isinstance(userfeatures._user, objects.User))
@@ -267,10 +268,10 @@ class TestUserFeatures(_BaseTestCase):
 
         self.assertEqual(interface, 'sip/abcd')
 
-    def test_set_xivo_user_name(self):
+    def test_set_user_name(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
-        userfeatures._set_xivo_user_name()
+        userfeatures._set_user_name()
 
         self._agi.assert_not_called()
 
@@ -280,30 +281,30 @@ class TestUserFeatures(_BaseTestCase):
         userfeatures._user.firstname = 'firstname'
         userfeatures._user.lastname = 'lastname'
 
-        userfeatures._set_xivo_user_name()
+        userfeatures._set_user_name()
 
         self._agi.set_variable.assert_called_once()
 
-    def test_set_xivo_redirecting_info_full_callerid(self):
+    def test_set_redirecting_info_full_callerid(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
         userfeatures._user = Mock()
         userfeatures._user.callerid = '"Foobar" <123>'
         userfeatures._dstnum = '42'
 
-        userfeatures._set_xivo_redirecting_info()
+        userfeatures._set_redirecting_info()
 
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_DST_REDIRECTING_NAME', 'Foobar'),
-                call('XIVO_DST_REDIRECTING_NUM', '123'),
+                call(dv.DST_REDIRECTING_NAME, 'Foobar'),
+                call(dv.DST_REDIRECTING_NUM, '123'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NAME', ''),
                 call('WAZO_DST_REDIRECTING_EXTERN_NUM', ''),
             ),
         )
 
-    def test_set_xivo_redirecting_info_no_callerid(self):
+    def test_set_redirecting_info_no_callerid(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
         userfeatures._user = Mock()
@@ -312,19 +313,19 @@ class TestUserFeatures(_BaseTestCase):
         userfeatures._user.callerid = ''
         userfeatures._dstnum = '42'
 
-        userfeatures._set_xivo_redirecting_info()
+        userfeatures._set_redirecting_info()
 
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_DST_REDIRECTING_NAME', 'First Last'),
-                call('XIVO_DST_REDIRECTING_NUM', '42'),
+                call(dv.DST_REDIRECTING_NAME, 'First Last'),
+                call(dv.DST_REDIRECTING_NUM, '42'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NAME', ''),
                 call('WAZO_DST_REDIRECTING_EXTERN_NUM', ''),
             ),
         )
 
-    def test_set_xivo_redirecting_info_line(self):
+    def test_set_redirecting_info_line(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
         userfeatures._user = Mock()
@@ -332,19 +333,19 @@ class TestUserFeatures(_BaseTestCase):
         userfeatures.main_extension = Mock(exten='32')
         userfeatures._dstnum = '42'
 
-        userfeatures._set_xivo_redirecting_info()
+        userfeatures._set_redirecting_info()
 
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_DST_REDIRECTING_NAME', 'Foobar'),
-                call('XIVO_DST_REDIRECTING_NUM', '32'),
+                call(dv.DST_REDIRECTING_NAME, 'Foobar'),
+                call(dv.DST_REDIRECTING_NUM, '32'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NAME', ''),
                 call('WAZO_DST_REDIRECTING_EXTERN_NUM', ''),
             ),
         )
 
-    def test_set_xivo_redirecting_info_no_outgoing_callerids(self):
+    def test_set_redirecting_info_no_outgoing_callerids(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
         userfeatures._user = Mock()
@@ -353,19 +354,19 @@ class TestUserFeatures(_BaseTestCase):
         userfeatures._dstnum = '42'
         self._set_confd_mock_outgoing_callerids_side_effect(HTTPError(404))
 
-        userfeatures._set_xivo_redirecting_info()
+        userfeatures._set_redirecting_info()
 
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_DST_REDIRECTING_NAME', 'Foobar'),
-                call('XIVO_DST_REDIRECTING_NUM', '32'),
+                call(dv.DST_REDIRECTING_NAME, 'Foobar'),
+                call(dv.DST_REDIRECTING_NUM, '32'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NAME', ''),
                 call('WAZO_DST_REDIRECTING_EXTERN_NUM', ''),
             ),
         )
 
-    def test_set_xivo_redirecting_info_associated_outgoing_callerid(self):
+    def test_set_redirecting_info_associated_outgoing_callerid(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
         userfeatures._user = Mock()
@@ -385,19 +386,19 @@ class TestUserFeatures(_BaseTestCase):
             ]
         )
 
-        userfeatures._set_xivo_redirecting_info()
+        userfeatures._set_redirecting_info()
 
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_DST_REDIRECTING_NAME', 'Foobar'),
-                call('XIVO_DST_REDIRECTING_NUM', '32'),
+                call(dv.DST_REDIRECTING_NAME, 'Foobar'),
+                call(dv.DST_REDIRECTING_NUM, '32'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NAME', '4242'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NUM', '4242'),
             ),
         )
 
-    def test_set_xivo_redirecting_info_associated_main_callerid(self):
+    def test_set_redirecting_info_associated_main_callerid(self):
         userfeatures = UserFeatures(self._agi, self._cursor, self._args)
 
         userfeatures._user = Mock()
@@ -417,13 +418,13 @@ class TestUserFeatures(_BaseTestCase):
             ]
         )
 
-        userfeatures._set_xivo_redirecting_info()
+        userfeatures._set_redirecting_info()
 
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_DST_REDIRECTING_NAME', 'Foobar'),
-                call('XIVO_DST_REDIRECTING_NUM', '32'),
+                call(dv.DST_REDIRECTING_NAME, 'Foobar'),
+                call(dv.DST_REDIRECTING_NUM, '32'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NAME', '4343'),
                 call('WAZO_DST_REDIRECTING_EXTERN_NUM', '4343'),
             ),
@@ -483,10 +484,10 @@ class TestSetForwardNoAnswer(_BaseTestCase):
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_FWD_USER_NOANSWER_ACTION', 'user'),
-                call('XIVO_FWD_USER_NOANSWER_ISDA', '1'),
-                call('XIVO_FWD_USER_NOANSWER_ACTIONARG1', '5'),
-                call('XIVO_FWD_USER_NOANSWER_ACTIONARG2', ''),
+                call(dv.FWD_USER_NOANSWER_ACTION, 'user'),
+                call(dv.FWD_USER_NOANSWER_ISDA, '1'),
+                call(dv.FWD_USER_NOANSWER_ACTIONARG1, '5'),
+                call(dv.FWD_USER_NOANSWER_ACTIONARG2, ''),
             ),
         )
 
@@ -509,9 +510,9 @@ class TestSetForwardNoAnswer(_BaseTestCase):
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_FWD_USER_NOANSWER_ACTION', 'extension'),
-                call('XIVO_FWD_USER_NOANSWER_ACTIONARG1', '555'),
-                call('XIVO_FWD_USER_NOANSWER_ACTIONARG2', sentinel.context),
+                call(dv.FWD_USER_NOANSWER_ACTION, 'extension'),
+                call(dv.FWD_USER_NOANSWER_ACTIONARG1, '555'),
+                call(dv.FWD_USER_NOANSWER_ACTIONARG2, sentinel.context),
             ),
         )
 
@@ -524,7 +525,7 @@ class TestSetForwardNoAnswer(_BaseTestCase):
         ):
             user_features._setrna()
             user_features._set_rna_from_exten.assert_called_once_with()  # type: ignore
-            assert_that(self._agi.set_variable.called_once_with('XIVO_ENABLERNA', True))
+            assert_that(self._agi.set_variable.called_once_with(dv.ENABLERNA, True))
 
     def test_setrna_exten_disabled_noanswer_disabled(self):
         user_features = UserFeatures(self._agi, self._cursor, self._args)
@@ -559,10 +560,10 @@ class TestSetForwardBusy(_BaseTestCase):
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_FWD_USER_BUSY_ACTION', 'user'),
-                call('XIVO_FWD_USER_BUSY_ISDA', '1'),
-                call('XIVO_FWD_USER_BUSY_ACTIONARG1', '5'),
-                call('XIVO_FWD_USER_BUSY_ACTIONARG2', ''),
+                call(dv.FWD_USER_BUSY_ACTION, 'user'),
+                call(dv.FWD_USER_BUSY_ISDA, '1'),
+                call(dv.FWD_USER_BUSY_ACTIONARG1, '5'),
+                call(dv.FWD_USER_BUSY_ACTIONARG2, ''),
             ),
         )
 
@@ -585,9 +586,9 @@ class TestSetForwardBusy(_BaseTestCase):
         assert_that(
             self._agi.set_variable.call_args_list,
             contains_exactly(
-                call('XIVO_FWD_USER_BUSY_ACTION', 'extension'),
-                call('XIVO_FWD_USER_BUSY_ACTIONARG1', '666'),
-                call('XIVO_FWD_USER_BUSY_ACTIONARG2', sentinel.context),
+                call(dv.FWD_USER_BUSY_ACTION, 'extension'),
+                call(dv.FWD_USER_BUSY_ACTIONARG1, '666'),
+                call(dv.FWD_USER_BUSY_ACTIONARG2, sentinel.context),
             ),
         )
 
@@ -600,9 +601,7 @@ class TestSetForwardBusy(_BaseTestCase):
         ):
             user_features._setbusy()
             user_features._set_rbusy_from_exten.assert_called_once_with()  # type: ignore
-            assert_that(
-                self._agi.set_variable.called_once_with('XIVO_ENABLEBUSY', True)
-            )
+            assert_that(self._agi.set_variable.called_once_with(dv.ENABLEBUSY, True))
 
     def test_set_busy_exten_disabled_noanswer_disabled(self):
         user_features = UserFeatures(self._agi, self._cursor, self._args)

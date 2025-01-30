@@ -10,12 +10,7 @@ from textwrap import dedent
 import pytest
 from hamcrest import assert_that, calling, raises
 
-from wazo_agid.dialplan_variables import (
-    GROUP_DTMF_RECORD_TOGGLE_ENABLED,
-    QUEUE_DTMF_RECORD_TOGGLE_ENABLED,
-    SELECTED_CALLER_ID,
-    TRUNK_CID_FORMAT,
-)
+from wazo_agid import dialplan_variables as dv
 
 from .helpers.agid import AGIFailException
 from .helpers.base import BaseAssetLaunchingHelper
@@ -49,7 +44,7 @@ def test_incoming_user_set_features_with_dstid(base_asset: BaseAssetLaunchingHel
         'WAZO_USER_MOH_UUID': '',
         'WAZO_CALL_RECORD_ACTIVE': '0',
         'WAZO_FROMGROUP': '0',
-        'XIVO_PATH': '',
+        dv.PATH: '',
         f'PJSIP_ENDPOINT({line["name"]},webrtc)': 'no',
         f'PJSIP_DIAL_CONTACTS({line["name"]})': 'contact',
         'CHANNEL(videonativeformat)': '1',
@@ -60,11 +55,11 @@ def test_incoming_user_set_features_with_dstid(base_asset: BaseAssetLaunchingHel
 
     assert recv_cmds['FAILURE'] is False
 
-    assert recv_vars['XIVO_DST_USERNUM'] == extension['exten']
+    assert recv_vars[dv.DST_USERNUM] == extension['exten']
     assert recv_vars['WAZO_DST_USER_CONTEXT'] == extension['context']
     assert recv_vars['WAZO_DST_NAME'] == 'Firstname Lastname'
-    assert recv_vars['XIVO_DST_REDIRECTING_NAME'] == 'Firstname Lastname'
-    assert recv_vars['XIVO_DST_REDIRECTING_NUM'] == extension['exten']
+    assert recv_vars[dv.DST_REDIRECTING_NAME] == 'Firstname Lastname'
+    assert recv_vars[dv.DST_REDIRECTING_NUM] == extension['exten']
     assert recv_vars['WAZO_DST_UUID'] == user['uuid']
     assert recv_vars['WAZO_DST_TENANT_UUID'] == user['tenant_uuid']
     assert recv_vars['WAZO_INTERFACE'] == 'contact'
@@ -72,37 +67,37 @@ def test_incoming_user_set_features_with_dstid(base_asset: BaseAssetLaunchingHel
     assert recv_vars['WAZO_CALLEE_SIMULTCALLS'] == str(user['simultcalls'])
     assert recv_vars['WAZO_RINGSECONDS'] == str(user['ringseconds'])
     assert recv_vars['WAZO_ENABLEDND'] == str(user['enablednd'])
-    assert recv_vars['XIVO_ENABLEVOICEMAIL'] == str(user['enablevoicemail'])
-    assert recv_vars['XIVO_MAILBOX'] == ''
-    assert recv_vars['XIVO_MAILBOX_CONTEXT'] == ''
-    assert recv_vars['XIVO_USEREMAIL'] == ''
+    assert recv_vars[dv.ENABLEVOICEMAIL] == str(user['enablevoicemail'])
+    assert recv_vars[dv.MAILBOX] == ''
+    assert recv_vars[dv.MAILBOX_CONTEXT] == ''
+    assert recv_vars[dv.USEREMAIL] == ''
     assert recv_vars['WAZO_ENABLEUNC'] == str(user['enableunc'])
-    assert recv_vars['XIVO_FWD_USER_UNC_ACTION'] == 'none'
-    assert recv_vars['XIVO_FWD_USER_UNC_ACTIONARG1'] == ''
-    assert recv_vars['XIVO_FWD_USER_UNC_ACTIONARG2'] == ''
-    assert recv_vars['XIVO_FWD_USER_BUSY_ACTION'] == 'none'
-    assert recv_vars['XIVO_FWD_USER_BUSY_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_USER_BUSY_ACTIONARG1'] == ''
-    assert recv_vars['XIVO_FWD_USER_BUSY_ACTIONARG2'] == ''
-    assert recv_vars['XIVO_FWD_USER_NOANSWER_ACTION'] == 'none'
-    assert recv_vars['XIVO_FWD_USER_NOANSWER_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_USER_NOANSWER_ACTIONARG1'] == ''
-    assert recv_vars['XIVO_FWD_USER_NOANSWER_ACTIONARG2'] == ''
-    assert recv_vars['XIVO_FWD_USER_CONGESTION_ACTION'] == 'none'
-    assert recv_vars['XIVO_FWD_USER_CONGESTION_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_USER_CONGESTION_ACTIONARG1'] == ''
-    assert recv_vars['XIVO_FWD_USER_CONGESTION_ACTIONARG2'] == ''
-    assert recv_vars['XIVO_FWD_USER_CHANUNAVAIL_ACTION'] == 'none'
-    assert recv_vars['XIVO_FWD_USER_CHANUNAVAIL_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_USER_CHANUNAVAIL_ACTIONARG1'] == ''
-    assert recv_vars['XIVO_FWD_USER_CHANUNAVAIL_ACTIONARG2'] == ''
+    assert recv_vars[dv.FWD_USER_UNC_ACTION] == 'none'
+    assert recv_vars[dv.FWD_USER_UNC_ACTIONARG1] == ''
+    assert recv_vars[dv.FWD_USER_UNC_ACTIONARG2] == ''
+    assert recv_vars[dv.FWD_USER_BUSY_ACTION] == 'none'
+    assert recv_vars[dv.FWD_USER_BUSY_ISDA] == '1'
+    assert recv_vars[dv.FWD_USER_BUSY_ACTIONARG1] == ''
+    assert recv_vars[dv.FWD_USER_BUSY_ACTIONARG2] == ''
+    assert recv_vars[dv.FWD_USER_NOANSWER_ACTION] == 'none'
+    assert recv_vars[dv.FWD_USER_NOANSWER_ISDA] == '1'
+    assert recv_vars[dv.FWD_USER_NOANSWER_ACTIONARG1] == ''
+    assert recv_vars[dv.FWD_USER_NOANSWER_ACTIONARG2] == ''
+    assert recv_vars[dv.FWD_USER_CONGESTION_ACTION] == 'none'
+    assert recv_vars[dv.FWD_USER_CONGESTION_ISDA] == '1'
+    assert recv_vars[dv.FWD_USER_CONGESTION_ACTIONARG1] == ''
+    assert recv_vars[dv.FWD_USER_CONGESTION_ACTIONARG2] == ''
+    assert recv_vars[dv.FWD_USER_CHANUNAVAIL_ACTION] == 'none'
+    assert recv_vars[dv.FWD_USER_CHANUNAVAIL_ISDA] == '1'
+    assert recv_vars[dv.FWD_USER_CHANUNAVAIL_ACTIONARG1] == ''
+    assert recv_vars[dv.FWD_USER_CHANUNAVAIL_ACTIONARG2] == ''
     assert recv_vars['CHANNEL(musicclass)'] == user['musiconhold']
     assert recv_vars['WAZO_CALL_RECORD_SIDE'] == 'caller'
     assert recv_vars['WAZO_USERPREPROCESS_SUBROUTINE'] == ''
     assert recv_vars['WAZO_MOBILEPHONENUMBER'] == ''
     assert recv_vars['WAZO_VIDEO_ENABLED'] == '1'
-    assert recv_vars['XIVO_PATH'] == 'user'
-    assert recv_vars['XIVO_PATH_ID'] == str(user['id'])
+    assert recv_vars[dv.PATH] == 'user'
+    assert recv_vars[dv.PATH_ID] == str(user['id'])
 
 
 def _setup_bsfilter(
@@ -183,10 +178,10 @@ def test_agent_get_options(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENTEXISTS'] == '1'
-    assert recv_vars['XIVO_AGENTPASSWD'] == ''
-    assert recv_vars['XIVO_AGENTID'] == str(agent['id'])
-    assert recv_vars['XIVO_AGENTNUM'] == agent['number']
+    assert recv_vars['WAZO_AGENTEXISTS'] == '1'
+    assert recv_vars['WAZO_AGENTPASSWD'] == ''
+    assert recv_vars['WAZO_AGENTID'] == str(agent['id'])
+    assert recv_vars['WAZO_AGENTNUM'] == agent['number']
     assert recv_vars['CHANNEL(language)'] == agent['language']
 
     recv_vars, recv_cmds = base_asset.agid.agent_get_options(
@@ -195,7 +190,7 @@ def test_agent_get_options(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENTEXISTS'] == '0'
+    assert recv_vars['WAZO_AGENTEXISTS'] == '0'
 
     # get agent by id
     recv_vars, recv_cmds = base_asset.agid.agent_get_options(
@@ -204,10 +199,10 @@ def test_agent_get_options(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENTEXISTS'] == '1'
-    assert recv_vars['XIVO_AGENTPASSWD'] == ''
-    assert recv_vars['XIVO_AGENTID'] == str(agent['id'])
-    assert recv_vars['XIVO_AGENTNUM'] == agent['number']
+    assert recv_vars['WAZO_AGENTEXISTS'] == '1'
+    assert recv_vars['WAZO_AGENTPASSWD'] == ''
+    assert recv_vars['WAZO_AGENTID'] == str(agent['id'])
+    assert recv_vars['WAZO_AGENTNUM'] == agent['number']
     assert recv_vars['CHANNEL(language)'] == agent['language']
 
     # can't find agent by id in other tenant
@@ -217,7 +212,7 @@ def test_agent_get_options(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENTEXISTS'] == '0'
+    assert recv_vars['WAZO_AGENTEXISTS'] == '0'
 
 
 def test_agent_get_status(base_asset: BaseAssetLaunchingHelper):
@@ -231,7 +226,7 @@ def test_agent_get_status(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENT_LOGIN_STATUS'] == 'logged_in'
+    assert recv_vars[dv.AGENT_LOGIN_STATUS] == 'logged_in'
 
     assert base_asset.agentd.verify_get_agent_status_called(agent['id']) is True
 
@@ -255,7 +250,7 @@ def test_agent_login(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENTSTATUS'] == 'logged'
+    assert recv_vars[dv.AGENTSTATUS] == 'logged'
 
     assert base_asset.agentd.verify_agent_login_called(agent['id']) is True
 
@@ -304,8 +299,8 @@ def test_callback(base_asset: BaseAssetLaunchingHelper):
         RetryTime: 30
         WaitTime: 30
         CallerID: {extension_number}
-        Set: XIVO_DISACONTEXT={context}
-        Context: xivo-callbackdisa
+        Set: {dv.DISACONTEXT}={context}
+        Context: wazo-callbackdisa
         Extension: s
         '''
     ).strip('\n')
@@ -316,7 +311,7 @@ def test_callerid_extend(base_asset: BaseAssetLaunchingHelper):
     recv_vars, recv_cmds = base_asset.agid.callerid_extend('en')
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_SRCTON'] == 'en'
+    assert recv_vars['WAZO_SRCTON'] == 'en'
 
 
 def test_callerid_forphones_without_reverse_lookup(
@@ -342,7 +337,7 @@ def test_callerid_forphones_with_reverse_lookup_unknown(
     recv_vars, recv_cmds = base_asset.agid.callerid_forphones(
         calleridname='unknown',
         callerid='numero',
-        XIVO_INCALL_ID=1,
+        WAZO_INCALL_ID=1,
         WAZO_TENANT_UUID='123-456',
     )
 
@@ -369,7 +364,7 @@ def test_callfilter(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_BSFILTERENABLED'] == '0'
+    assert recv_vars[dv.BSFILTERENABLED] == '0'
 
 
 def test_call_recording_start(base_asset: BaseAssetLaunchingHelper):
@@ -425,7 +420,7 @@ def test_call_record_caller(base_asset: BaseAssetLaunchingHelper):
         'WAZO_USERUUID': user['uuid'],
         'WAZO_TENANT_UUID': user['tenant_uuid'],
         'WAZO_CALLORIGIN': 'intern',
-        'XIVO_OUTCALLID': '',
+        dv.OUTCALL_ID: '',
         'WAZO_MIXMONITOR_OPTIONS': 'mix-options',
     }
 
@@ -460,7 +455,7 @@ def test_check_diversion_hold_time(base_asset: BaseAssetLaunchingHelper):
     recv_vars, recv_cmds = base_asset.agid.check_diversion(variables=variables)
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_DIVERT_EVENT'] == 'DIVERT_HOLDTIME'
+    assert recv_vars[dv.DIVERT_EVENT] == 'DIVERT_HOLDTIME'
     assert recv_vars['WAZO_FWD_TYPE'] == 'QUEUE_QWAITTIME'
 
 
@@ -478,7 +473,7 @@ def test_check_diversion_wait_ratio(base_asset: BaseAssetLaunchingHelper):
     recv_vars, recv_cmds = base_asset.agid.check_diversion(variables=variables)
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_DIVERT_EVENT'] == 'DIVERT_CA_RATIO'
+    assert recv_vars[dv.DIVERT_EVENT] == 'DIVERT_CA_RATIO'
     assert recv_vars['WAZO_FWD_TYPE'] == 'QUEUE_QWAITRATIO'
 
 
@@ -498,18 +493,18 @@ def test_check_schedule(base_asset: BaseAssetLaunchingHelper):
         )
 
     variables = {
-        'XIVO_PATH': schedule_path['path'],
-        'XIVO_PATH_ID': str(schedule_path['path_id']),
+        dv.PATH: schedule_path['path'],
+        dv.PATH_ID: str(schedule_path['path_id']),
     }
 
     recv_vars, recv_cmds = base_asset.agid.check_schedule(variables=variables)
 
     assert recv_cmds['FAILURE'] is False
     assert recv_vars['WAZO_SCHEDULE_STATUS'] == 'closed'
-    assert recv_vars['XIVO_PATH'] == ''
-    assert recv_vars['XIVO_FWD_SCHEDULE_OUT_ACTION'] == 'sound'
-    assert recv_vars['XIVO_FWD_SCHEDULE_OUT_ACTIONARG1'] == '1'
-    assert recv_vars['XIVO_FWD_SCHEDULE_OUT_ACTIONARG2'] == 'arg2'
+    assert recv_vars[dv.PATH] == ''
+    assert recv_vars[dv.FWD_SCHEDULE_OUT_ACTION] == 'sound'
+    assert recv_vars[dv.FWD_SCHEDULE_OUT_ACTIONARG1] == '1'
+    assert recv_vars[dv.FWD_SCHEDULE_OUT_ACTIONARG2] == 'arg2'
 
 
 def test_ignore_b_option(base_asset: BaseAssetLaunchingHelper):
@@ -525,8 +520,8 @@ def test_ignore_b_option(base_asset: BaseAssetLaunchingHelper):
 
 def test_format_and_set_outgoing_caller_id(base_asset: BaseAssetLaunchingHelper):
     variables = {
-        SELECTED_CALLER_ID: '4185551234',
-        TRUNK_CID_FORMAT: '+E164',
+        dv.SELECTED_CALLER_ID: '4185551234',
+        dv.TRUNK_CID_FORMAT: '+E164',
         'WAZO_TENANT_COUNTRY': 'CA',
     }
 
@@ -542,8 +537,8 @@ def test_format_and_set_outgoing_caller_id_cannot_be_parsed(
     base_asset: BaseAssetLaunchingHelper,
 ):
     variables = {
-        SELECTED_CALLER_ID: '4185551234',
-        TRUNK_CID_FORMAT: '+E164',
+        dv.SELECTED_CALLER_ID: '4185551234',
+        dv.TRUNK_CID_FORMAT: '+E164',
         'WAZO_TENANT_COUNTRY': '',
     }
 
@@ -577,18 +572,18 @@ def test_fwdundoall(base_asset: BaseAssetLaunchingHelper):
 
 def test_getring(base_asset: BaseAssetLaunchingHelper):
     variables = {
-        'XIVO_REAL_NUMBER': '1001',
-        'XIVO_REAL_CONTEXT': 'default',
+        dv.REAL_NUMBER: '1001',
+        dv.REAL_CONTEXT: 'default',
         'WAZO_CALLORIGIN': 'patate',
         'WAZO_FWD_REFERER': 'foo:bar',
-        'XIVO_CALLFORWARDED': '1',
+        dv.CALLFORWARDED: '1',
     }
 
     recv_vars, recv_cmds = base_asset.agid.getring(variables=variables)
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_PHONETYPE'] == 'linksys'
-    assert recv_vars['XIVO_RINGTYPE'] == 'test-ring'
+    assert recv_vars[dv.PHONETYPE] == 'linksys'
+    assert recv_vars[dv.RINGTYPE] == 'test-ring'
 
 
 def test_get_user_interfaces(base_asset: BaseAssetLaunchingHelper):
@@ -748,9 +743,9 @@ def test_incoming_agent_set_features(base_asset: BaseAssetLaunchingHelper):
         agent['id'], variables=variables
     )
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENT_INTERFACE'] == 'test-device'
-    assert recv_vars['XIVO_AGENTPREPROCESS_SUBROUTINE'] == 'test-subroutine'
-    assert recv_vars['XIVO_QUEUECALLOPTIONS'] == 'hitwxk'
+    assert recv_vars[dv.AGENT_INTERFACE] == 'test-device'
+    assert recv_vars[dv.AGENTPREPROCESS_SUBROUTINE] == 'test-subroutine'
+    assert recv_vars[dv.QUEUECALLOPTIONS] == 'hitwxk'
 
 
 def test_incoming_conference_set_features(base_asset: BaseAssetLaunchingHelper):
@@ -770,13 +765,13 @@ def test_incoming_conference_set_features(base_asset: BaseAssetLaunchingHelper):
     assert recv_vars['WAZO_CONFBRIDGE_TENANT_UUID'] == conference['tenant_uuid']
     assert (
         recv_vars['WAZO_CONFBRIDGE_BRIDGE_PROFILE']
-        == f'xivo-bridge-profile-{conference["id"]}'
+        == f'wazo-bridge-profile-{conference["id"]}'
     )
     assert (
         recv_vars['WAZO_CONFBRIDGE_USER_PROFILE']
-        == f'xivo-user-profile-{conference["id"]}'
+        == f'wazo-user-profile-{conference["id"]}'
     )
-    assert recv_vars['WAZO_CONFBRIDGE_MENU'] == 'xivo-default-user-menu'
+    assert recv_vars['WAZO_CONFBRIDGE_MENU'] == 'wazo-default-user-menu'
     assert recv_vars['WAZO_CONFBRIDGE_PREPROCESS_SUBROUTINE'] == ''
     assert recv_cmds['EXEC CELGenUserEvent'] == f'WAZO_CONFERENCE, NAME: {name}'
 
@@ -789,7 +784,7 @@ def test_incoming_did_set_features(base_asset: BaseAssetLaunchingHelper):
         extension = queries.insert_extension(type='incall', typeval=call['id'])
 
     variables = {
-        'XIVO_INCALL_ID': call['id'],
+        dv.INCALL_ID: call['id'],
         'WAZO_DSTID': call['id'],
     }
     recv_vars, recv_cmds = base_asset.agid.incoming_did_set_features(
@@ -797,12 +792,12 @@ def test_incoming_did_set_features(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_DIDPREPROCESS_SUBROUTINE'] == 'test-subroutine'
-    assert recv_vars['XIVO_EXTENPATTERN'] == extension['exten']
-    assert recv_vars['XIVO_PATH'] == 'incall'
-    assert recv_vars['XIVO_PATH_ID'] == str(call['id'])
-    assert recv_vars['XIVO_REAL_CONTEXT'] == extension['context']
-    assert recv_vars['XIVO_REAL_NUMBER'] == extension['exten']
+    assert recv_vars[dv.DIDPREPROCESS_SUBROUTINE] == 'test-subroutine'
+    assert recv_vars[dv.EXTENPATTERN] == extension['exten']
+    assert recv_vars[dv.PATH] == 'incall'
+    assert recv_vars[dv.PATH_ID] == str(call['id'])
+    assert recv_vars[dv.REAL_CONTEXT] == extension['context']
+    assert recv_vars[dv.REAL_NUMBER] == extension['exten']
     assert recv_vars['WAZO_GREETING_SOUND'] == 'test-sound'
 
 
@@ -831,7 +826,7 @@ def test_incoming_group_set_features(base_asset: BaseAssetLaunchingHelper):
     variables = {
         'WAZO_DSTID': group['id'],
         'WAZO_FWD_REFERER': group['id'],
-        'XIVO_PATH': None,
+        dv.PATH: None,
     }
     recv_vars, recv_cmds = base_asset.agid.incoming_group_set_features(
         variables=variables
@@ -839,40 +834,36 @@ def test_incoming_group_set_features(base_asset: BaseAssetLaunchingHelper):
 
     assert recv_cmds['FAILURE'] is False
     assert recv_vars['WAZO_GROUPOPTIONS'] == 'ir'
-    assert recv_vars['XIVO_GROUPNEEDANSWER'] == '0'
-    assert recv_vars['XIVO_REAL_NUMBER'] == extension['exten']
-    assert recv_vars['XIVO_REAL_CONTEXT'] == extension['context']
+    assert recv_vars[dv.GROUPNEEDANSWER] == '0'
+    assert recv_vars[dv.REAL_NUMBER] == extension['exten']
+    assert recv_vars[dv.REAL_CONTEXT] == extension['context']
     assert recv_vars['__WAZO_GROUPNAME'] == 'incoming_group_set_features'
     assert recv_vars['WAZO_GROUP_LABEL'] == 'incoming group set features'
-    assert recv_vars['XIVO_GROUPTIMEOUT'] == '25'
+    assert recv_vars[dv.GROUP_TIMEOUT] == '25'
     assert recv_vars['WAZO_GROUP_USER_TIMEOUT'] == '10'
     assert recv_vars['WAZO_GROUP_STRATEGY'] == 'linear'
     assert recv_vars['WAZO_GROUP_RETRY_DELAY'] == '5'
-    assert recv_vars[f'__{GROUP_DTMF_RECORD_TOGGLE_ENABLED}'] == '1'
+    assert recv_vars[f'__{dv.GROUP_DTMF_RECORD_TOGGLE_ENABLED}'] == '1'
 
-    assert recv_vars['XIVO_FWD_GROUP_NOANSWER_ACTION'] == 'group'
-    assert recv_vars['XIVO_FWD_GROUP_NOANSWER_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_GROUP_NOANSWER_ACTIONARG1'] == 'noanswer-actionarg1'
-    assert recv_vars['XIVO_FWD_GROUP_NOANSWER_ACTIONARG2'] == 'noanswer-actionarg2'
-    assert recv_vars['XIVO_FWD_GROUP_CONGESTION_ACTION'] == 'group'
-    assert recv_vars['XIVO_FWD_GROUP_CONGESTION_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_GROUP_CONGESTION_ACTIONARG1'] == 'congestion-actionarg1'
-    assert recv_vars['XIVO_FWD_GROUP_CONGESTION_ACTIONARG2'] == 'congestion-actionarg2'
-    assert recv_vars['XIVO_FWD_GROUP_BUSY_ACTION'] == 'group'
-    assert recv_vars['XIVO_FWD_GROUP_BUSY_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_GROUP_BUSY_ACTIONARG1'] == 'busy-actionarg1'
-    assert recv_vars['XIVO_FWD_GROUP_BUSY_ACTIONARG2'] == 'busy-actionarg2'
-    assert recv_vars['XIVO_FWD_GROUP_CHANUNAVAIL_ACTION'] == 'group'
-    assert recv_vars['XIVO_FWD_GROUP_CHANUNAVAIL_ISDA'] == '1'
-    assert (
-        recv_vars['XIVO_FWD_GROUP_CHANUNAVAIL_ACTIONARG1'] == 'chanunavail-actionarg1'
-    )
-    assert (
-        recv_vars['XIVO_FWD_GROUP_CHANUNAVAIL_ACTIONARG2'] == 'chanunavail-actionarg2'
-    )
+    assert recv_vars[dv.FWD_GROUP_NOANSWER_ACTION] == 'group'
+    assert recv_vars[dv.FWD_GROUP_NOANSWER_ISDA] == '1'
+    assert recv_vars[dv.FWD_GROUP_NOANSWER_ACTIONARG1] == 'noanswer-actionarg1'
+    assert recv_vars[dv.FWD_GROUP_NOANSWER_ACTIONARG2] == 'noanswer-actionarg2'
+    assert recv_vars[dv.FWD_GROUP_CONGESTION_ACTION] == 'group'
+    assert recv_vars[dv.FWD_GROUP_CONGESTION_ISDA] == '1'
+    assert recv_vars[dv.FWD_GROUP_CONGESTION_ACTIONARG1] == 'congestion-actionarg1'
+    assert recv_vars[dv.FWD_GROUP_CONGESTION_ACTIONARG2] == 'congestion-actionarg2'
+    assert recv_vars[dv.FWD_GROUP_BUSY_ACTION] == 'group'
+    assert recv_vars[dv.FWD_GROUP_BUSY_ISDA] == '1'
+    assert recv_vars[dv.FWD_GROUP_BUSY_ACTIONARG1] == 'busy-actionarg1'
+    assert recv_vars[dv.FWD_GROUP_BUSY_ACTIONARG2] == 'busy-actionarg2'
+    assert recv_vars[dv.FWD_GROUP_CHANUNAVAIL_ACTION] == 'group'
+    assert recv_vars[dv.FWD_GROUP_CHANUNAVAIL_ISDA] == '1'
+    assert recv_vars[dv.FWD_GROUP_CHANUNAVAIL_ACTIONARG1] == 'chanunavail-actionarg1'
+    assert recv_vars[dv.FWD_GROUP_CHANUNAVAIL_ACTIONARG2] == 'chanunavail-actionarg2'
 
-    assert recv_vars['XIVO_PATH'] == 'group'
-    assert recv_vars['XIVO_PATH_ID'] == str(group['id'])
+    assert recv_vars[dv.PATH] == 'group'
+    assert recv_vars[dv.PATH_ID] == str(group['id'])
     assert recv_vars['WAZO_CALL_RECORD_SIDE'] == 'caller'
     assert (
         re.match(r'^[a-f0-9\-]{36}$', recv_vars['__WAZO_LOCAL_CHAN_MATCH_UUID'])
@@ -896,7 +887,7 @@ def test_incoming_group_set_features_linear_with_music(
     variables = {
         'WAZO_DSTID': group['id'],
         'WAZO_FWD_REFERER': group['id'],
-        'XIVO_PATH': None,
+        dv.PATH: None,
     }
     recv_vars, recv_cmds = base_asset.agid.incoming_group_set_features(
         variables=variables
@@ -904,8 +895,8 @@ def test_incoming_group_set_features_linear_with_music(
 
     assert recv_cmds['FAILURE'] is False
     assert recv_vars['WAZO_GROUPOPTIONS'] == 'im'
-    assert recv_vars['XIVO_GROUPNEEDANSWER'] == '1'
-    assert recv_vars['XIVO_GROUPTIMEOUT'] == '25'
+    assert recv_vars[dv.GROUPNEEDANSWER] == '1'
+    assert recv_vars[dv.GROUP_TIMEOUT] == '25'
     assert recv_vars['WAZO_GROUP_USER_TIMEOUT'] == '10'
     assert recv_vars['WAZO_GROUP_STRATEGY'] == 'linear'
     assert recv_vars['WAZO_GROUP_RETRY_DELAY'] == '5'
@@ -914,7 +905,7 @@ def test_incoming_group_set_features_linear_with_music(
 def test_linear_group_check_timeout_initial(base_asset: BaseAssetLaunchingHelper):
     variables = {
         'WAZO_DSTID': '1',
-        'XIVO_GROUPTIMEOUT': 25,
+        dv.GROUP_TIMEOUT: 25,
         'WAZO_GROUP_USER_TIMEOUT': 5,
     }
     start_time = time.time()
@@ -937,7 +928,7 @@ def test_linear_group_check_timeout_not_expired(base_asset: BaseAssetLaunchingHe
     start_time = time.time() - 21
     variables = {
         'WAZO_DSTID': '1',
-        'XIVO_GROUPTIMEOUT': 25,
+        dv.GROUP_TIMEOUT: 25,
         'WAZO_GROUP_START_TIME': start_time,
         'WAZO_GROUP_USER_TIMEOUT': 5,
     }
@@ -956,7 +947,7 @@ def test_linear_group_check_timeout_expired(base_asset: BaseAssetLaunchingHelper
     start_time = time.time() - 25
     variables = {
         'WAZO_DSTID': '1',
-        'XIVO_GROUPTIMEOUT': 25,
+        dv.GROUP_TIMEOUT: 25,
         'WAZO_GROUP_START_TIME': start_time,
         'WAZO_GROUP_USER_TIMEOUT': 5,
     }
@@ -1214,52 +1205,48 @@ def test_incoming_queue_set_features(base_asset: BaseAssetLaunchingHelper):
     variables = {
         'WAZO_DSTID': queue['id'],
         'WAZO_FWD_REFERER': queue['id'],
-        'XIVO_PATH': '',
+        dv.PATH: '',
     }
     recv_vars, recv_cmds = base_asset.agid.incoming_queue_set_features(
         variables=variables
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_REAL_NUMBER'] == queue['number']
-    assert recv_vars['XIVO_REAL_CONTEXT'] == 'default'
+    assert recv_vars[dv.REAL_NUMBER] == queue['number']
+    assert recv_vars[dv.REAL_CONTEXT] == 'default'
     assert recv_vars['__WAZO_QUEUENAME'] == queue['name']
     assert recv_vars['WAZO_QUEUEOPTIONS'] == 'dhHnrtTxXiC'
-    assert recv_vars[f'__{QUEUE_DTMF_RECORD_TOGGLE_ENABLED}'] == '1'
-    assert recv_vars['XIVO_QUEUENEEDANSWER'] == '0'
-    assert recv_vars['XIVO_QUEUEURL'] == 'localhost'
-    assert recv_vars['XIVO_QUEUEANNOUNCEOVERRIDE'] == 'override'
-    assert recv_vars['XIVO_QUEUEPREPROCESS_SUBROUTINE'] == 'subroutine'
-    assert recv_vars['XIVO_QUEUETIMEOUT'] == '25'
+    assert recv_vars[f'__{dv.QUEUE_DTMF_RECORD_TOGGLE_ENABLED}'] == '1'
+    assert recv_vars[dv.QUEUENEEDANSWER] == '0'
+    assert recv_vars[dv.QUEUEURL] == 'localhost'
+    assert recv_vars[dv.QUEUEANNOUNCEOVERRIDE] == 'override'
+    assert recv_vars[dv.QUEUEPREPROCESS_SUBROUTINE] == 'subroutine'
+    assert recv_vars[dv.QUEUETIMEOUT] == '25'
 
-    assert recv_vars['XIVO_FWD_QUEUE_NOANSWER_ACTION'] == 'queue'
-    assert recv_vars['XIVO_FWD_QUEUE_NOANSWER_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_QUEUE_NOANSWER_ACTIONARG1'] == 'noanswer-actionarg1'
-    assert recv_vars['XIVO_FWD_QUEUE_NOANSWER_ACTIONARG2'] == 'noanswer-actionarg2'
-    assert recv_vars['XIVO_FWD_QUEUE_CONGESTION_ACTION'] == 'queue'
-    assert recv_vars['XIVO_FWD_QUEUE_CONGESTION_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_QUEUE_CONGESTION_ACTIONARG1'] == 'congestion-actionarg1'
-    assert recv_vars['XIVO_FWD_QUEUE_CONGESTION_ACTIONARG2'] == 'congestion-actionarg2'
-    assert recv_vars['XIVO_FWD_QUEUE_BUSY_ACTION'] == 'queue'
-    assert recv_vars['XIVO_FWD_QUEUE_BUSY_ISDA'] == '1'
-    assert recv_vars['XIVO_FWD_QUEUE_BUSY_ACTIONARG1'] == 'busy-actionarg1'
-    assert recv_vars['XIVO_FWD_QUEUE_BUSY_ACTIONARG2'] == 'busy-actionarg2'
-    assert recv_vars['XIVO_FWD_QUEUE_CHANUNAVAIL_ACTION'] == 'queue'
-    assert recv_vars['XIVO_FWD_QUEUE_CHANUNAVAIL_ISDA'] == '1'
-    assert (
-        recv_vars['XIVO_FWD_QUEUE_CHANUNAVAIL_ACTIONARG1'] == 'chanunavail-actionarg1'
-    )
-    assert (
-        recv_vars['XIVO_FWD_QUEUE_CHANUNAVAIL_ACTIONARG2'] == 'chanunavail-actionarg2'
-    )
+    assert recv_vars[dv.FWD_QUEUE_NOANSWER_ACTION] == 'queue'
+    assert recv_vars[dv.FWD_QUEUE_NOANSWER_ISDA] == '1'
+    assert recv_vars[dv.FWD_QUEUE_NOANSWER_ACTIONARG1] == 'noanswer-actionarg1'
+    assert recv_vars[dv.FWD_QUEUE_NOANSWER_ACTIONARG2] == 'noanswer-actionarg2'
+    assert recv_vars[dv.FWD_QUEUE_CONGESTION_ACTION] == 'queue'
+    assert recv_vars[dv.FWD_QUEUE_CONGESTION_ISDA] == '1'
+    assert recv_vars[dv.FWD_QUEUE_CONGESTION_ACTIONARG1] == 'congestion-actionarg1'
+    assert recv_vars[dv.FWD_QUEUE_CONGESTION_ACTIONARG2] == 'congestion-actionarg2'
+    assert recv_vars[dv.FWD_QUEUE_BUSY_ACTION] == 'queue'
+    assert recv_vars[dv.FWD_QUEUE_BUSY_ISDA] == '1'
+    assert recv_vars[dv.FWD_QUEUE_BUSY_ACTIONARG1] == 'busy-actionarg1'
+    assert recv_vars[dv.FWD_QUEUE_BUSY_ACTIONARG2] == 'busy-actionarg2'
+    assert recv_vars[dv.FWD_QUEUE_CHANUNAVAIL_ACTION] == 'queue'
+    assert recv_vars[dv.FWD_QUEUE_CHANUNAVAIL_ISDA] == '1'
+    assert recv_vars[dv.FWD_QUEUE_CHANUNAVAIL_ACTIONARG1] == 'chanunavail-actionarg1'
+    assert recv_vars[dv.FWD_QUEUE_CHANUNAVAIL_ACTIONARG2] == 'chanunavail-actionarg2'
 
-    assert recv_vars['XIVO_QUEUESTATUS'] == 'ok'
-    assert recv_vars['XIVO_PATH'] == 'queue'
-    assert recv_vars['XIVO_PATH_ID'] == str(queue['id'])
+    assert recv_vars[dv.QUEUESTATUS] == 'ok'
+    assert recv_vars[dv.PATH] == 'queue'
+    assert recv_vars[dv.PATH_ID] == str(queue['id'])
     assert recv_vars['WAZO_CALL_RECORD_SIDE'] == 'caller'
     assert recv_vars['CHANNEL(musicclass)'] == 'test-music'
     assert recv_vars['__QUEUEWRAPUPTIME'] == '20'
-    assert recv_vars['XIVO_PICKUPGROUP'] == str(pickup['id'])
+    assert recv_vars[dv.PICKUPGROUP] == str(pickup['id'])
     assert (
         re.match(r'^[a-f0-9\-]{36}$', recv_vars['__WAZO_LOCAL_CHAN_MATCH_UUID'])
         is not None
@@ -1292,7 +1279,7 @@ def test_outgoing_user_set_features(base_asset: BaseAssetLaunchingHelper):
         'WAZO_SRCNUM': extension['exten'],
         'WAZO_BASE_CONTEXT': extension['context'],
         'WAZO_TENANT_UUID': '',
-        'XIVO_PATH': '',
+        dv.PATH: '',
     }
     recv_vars, recv_cmds = base_asset.agid.outgoing_user_set_features(
         agi_channel='test', variables=variables
@@ -1303,13 +1290,13 @@ def test_outgoing_user_set_features(base_asset: BaseAssetLaunchingHelper):
     assert recv_vars['CHANNEL(musicclass)'] == 'default'
     assert recv_vars['WAZO_INTERFACE0'] == 'PJSIP'
     assert recv_vars['WAZO_OUTGOING_CALLER_ID_FORMAT0'] == 'national'
-    assert recv_vars['XIVO_TRUNKEXTEN0'] == f'{extension["exten"]}@{sip["name"]}'
-    assert recv_vars['XIVO_TRUNKSUFFIX0'] == ''
-    assert recv_vars['XIVO_OUTCALLPREPROCESS_SUBROUTINE'] == 'test-subroutine'
-    assert recv_vars['XIVO_HANGUPRINGTIME'] == '10'
-    assert recv_vars['XIVO_OUTCALLID'] == str(call['id'])
-    assert recv_vars['XIVO_PATH'] == 'outcall'
-    assert recv_vars['XIVO_PATH_ID'] == str(call['id'])
+    assert recv_vars[f'{dv.TRUNK_EXTEN}0'] == f'{extension["exten"]}@{sip["name"]}'
+    assert recv_vars[f'{dv.TRUNK_SUFFIX}0'] == ''
+    assert recv_vars[dv.OUTCALL_PREPROCESS_SUBROUTINE] == 'test-subroutine'
+    assert recv_vars[dv.HANGUP_RING_TIME] == '10'
+    assert recv_vars[dv.OUTCALL_ID] == str(call['id'])
+    assert recv_vars[dv.PATH] == 'outcall'
+    assert recv_vars[dv.PATH_ID] == str(call['id'])
     assert recv_vars['WAZO_CALL_RECORD_SIDE'] == 'caller'
     assert recv_vars['CALLERID(pres)'] == 'prohib'
     assert recv_vars['WAZO_OUTGOING_ANONYMOUS_CALL'] == '1'
@@ -1380,13 +1367,13 @@ def test_paging(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert f'PJSIP/{line_1["name"]}' in recv_vars['XIVO_PAGING_LINES']
-    assert f'PJSIP/{line_2["name"]}' in recv_vars['XIVO_PAGING_LINES']
-    assert recv_vars['XIVO_PAGING_TIMEOUT'] == '25'
+    assert f'PJSIP/{line_1["name"]}' in recv_vars[dv.PAGING_LINES]
+    assert f'PJSIP/{line_2["name"]}' in recv_vars[dv.PAGING_LINES]
+    assert recv_vars[dv.PAGING_TIMEOUT] == '25'
     tenant_uuid = paging['tenant_uuid']
     opts_part_1 = 'sb(paging^add-sip-headers^1)dqri'
     opts_part_2 = f'A(/var/lib/wazo/sounds/tenants/{tenant_uuid}/playback/sounds.wav)'
-    assert recv_vars['XIVO_PAGING_OPTS'] == f'{opts_part_1}{opts_part_2}'
+    assert recv_vars[dv.PAGING_OPTS] == f'{opts_part_1}{opts_part_2}'
 
 
 def test_phone_get_features(base_asset: BaseAssetLaunchingHelper):
@@ -1422,17 +1409,17 @@ def test_phone_get_features(base_asset: BaseAssetLaunchingHelper):
 
     assert recv_cmds['FAILURE'] is False
 
-    assert recv_vars['XIVO_ENABLEVOICEMAIL'] == '1'
-    assert recv_vars['XIVO_CALLRECORD'] == '1'
-    assert recv_vars['XIVO_INCALLFILTER'] == '1'
+    assert recv_vars[dv.ENABLEVOICEMAIL] == '1'
+    assert recv_vars[dv.CALLRECORD] == '1'
+    assert recv_vars[dv.INCALLFILTER] == '1'
     assert recv_vars['WAZO_ENABLEDND'] == '1'
 
-    assert recv_vars['XIVO_ENABLEBUSY'] == '1'
-    assert recv_vars['XIVO_DESTBUSY'] == 'dest-busy'
-    assert recv_vars['XIVO_ENABLERNA'] == '1'
-    assert recv_vars['XIVO_DESTRNA'] == 'dest-noanswer'
+    assert recv_vars[dv.ENABLEBUSY] == '1'
+    assert recv_vars[dv.DESTBUSY] == 'dest-busy'
+    assert recv_vars[dv.ENABLERNA] == '1'
+    assert recv_vars[dv.DESTRNA] == 'dest-noanswer'
     assert recv_vars['WAZO_ENABLEUNC'] == '0'
-    assert recv_vars['XIVO_DESTUNC'] == 'dest-unconditional'
+    assert recv_vars[dv.DESTUNC] == 'dest-unconditional'
 
 
 def test_phone_progfunckey_devstate(base_asset: BaseAssetLaunchingHelper):
@@ -1471,8 +1458,8 @@ def test_phone_progfunckey(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_PHONE_PROGFUNCKEY'] == extension['exten']
-    assert recv_vars['XIVO_PHONE_PROGFUNCKEY_FEATURE'] == 'fwdbusy'
+    assert recv_vars[dv.PHONE_PROGFUNCKEY] == extension['exten']
+    assert recv_vars[dv.PHONE_PROGFUNCKEY_FEATURE] == 'fwdbusy'
 
 
 def test_provision_autoprov(base_asset: BaseAssetLaunchingHelper):
@@ -1495,7 +1482,7 @@ def test_provision_autoprov(base_asset: BaseAssetLaunchingHelper):
     assert base_asset.confd.verify_devices_synchronize_called(1) is True
     base_asset.confd.clear()
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_PROV_OK'] == '1'
+    assert recv_vars[dv.PROV_OK] == '1'
 
 
 def test_provision_add_device(base_asset: BaseAssetLaunchingHelper):
@@ -1525,7 +1512,7 @@ def test_provision_add_device(base_asset: BaseAssetLaunchingHelper):
     assert base_asset.confd.verify_devices_synchronize_called(2) is True
     base_asset.confd.clear()
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_PROV_OK'] == '1'
+    assert recv_vars[dv.PROV_OK] == '1'
 
 
 def test_queue_answered_call(base_asset: BaseAssetLaunchingHelper):
@@ -1562,13 +1549,13 @@ def test_queue_skill_rule_set(base_asset: BaseAssetLaunchingHelper):
         'queue_skill_rule_set',
         variables={
             'ARG2': f'timeout;{skill_rule["id"]};{{"opt1":1|"opt2": "val2"}}',
-            'XIVO_QUEUESKILLRULESET': 'call',
+            dv.QUEUESKILLRULESET: 'call',
         },
     )
 
     assert recv_cmds['FAILURE'] is False
     assert (
-        recv_vars['XIVO_QUEUESKILLRULESET']
+        recv_vars[dv.QUEUESKILLRULESET]
         == f'skillrule-{skill_rule["id"]}(opt1=1,opt2=val2)'
     )
     assert recv_vars['ARG2_TIMEOUT'] == 'timeout'
@@ -1648,9 +1635,9 @@ def test_user_get_vmbox(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_VMMAIN_OPTIONS'] == 's'
-    assert recv_vars['XIVO_MAILBOX'] == voicemail['mailbox']
-    assert recv_vars['XIVO_MAILBOX_CONTEXT'] == context['name']
+    assert recv_vars[dv.VMMAIN_OPTIONS] == 's'
+    assert recv_vars[dv.MAILBOX] == voicemail['mailbox']
+    assert recv_vars[dv.MAILBOX_CONTEXT] == context['name']
 
 
 def test_user_set_call_rights(base_asset: BaseAssetLaunchingHelper):
@@ -1667,14 +1654,14 @@ def test_user_set_call_rights(base_asset: BaseAssetLaunchingHelper):
     variables = {
         'WAZO_USERID': user['id'],
         'WAZO_DSTNUM': extension['exten'],
-        'XIVO_OUTCALLID': '42',
+        dv.OUTCALL_ID: '42',
     }
     recv_vars, recv_cmds = base_asset.agid.user_set_call_rights(
         extension['exten'], variables=variables
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AUTHORIZATION'] == 'DENY'
+    assert recv_vars[dv.AUTHORIZATION] == 'DENY'
 
 
 def test_vmbox_get_info(base_asset: BaseAssetLaunchingHelper):
@@ -1689,7 +1676,7 @@ def test_vmbox_get_info(base_asset: BaseAssetLaunchingHelper):
 
     variables = {
         'WAZO_USERID': user['id'],
-        'XIVO_VMBOXID': voicemail['id'],
+        dv.VMBOXID: voicemail['id'],
         'WAZO_BASE_CONTEXT': context['name'],
     }
     recv_vars, recv_cmds = base_asset.agid.vmbox_get_info(
@@ -1697,10 +1684,10 @@ def test_vmbox_get_info(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_VMMAIN_OPTIONS'] == 's'
-    assert recv_vars['XIVO_MAILBOX'] == voicemail['mailbox']
-    assert recv_vars['XIVO_MAILBOX_CONTEXT'] == context['name']
-    assert recv_vars['XIVO_MAILBOX_LANGUAGE'] == 'fr_FR'
+    assert recv_vars[dv.VMMAIN_OPTIONS] == 's'
+    assert recv_vars[dv.MAILBOX] == voicemail['mailbox']
+    assert recv_vars[dv.MAILBOX_CONTEXT] == context['name']
+    assert recv_vars[dv.MAILBOX_LANGUAGE] == 'fr_FR'
 
 
 DATETIME_REGEX = r'(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(.\d{1,6})?\+00:00)'

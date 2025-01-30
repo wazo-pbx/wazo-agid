@@ -1,4 +1,4 @@
-# Copyright 2012-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2012-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -8,7 +8,9 @@ import os
 
 from psycopg2.extras import DictCursor
 
-from wazo_agid import agid, objects
+from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
+from wazo_agid import objects
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +26,9 @@ def paging(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
         agi.dp_break(f'Sorry you are not authorize to page this group : {str(e)}')
 
     paging_line = '&'.join(paging_entry.lines)
-    agi.set_variable('XIVO_PAGING_LINES', paging_line)
-    agi.set_variable('XIVO_PAGING_TIMEOUT', paging_entry.timeout)
-    agi.set_variable('XIVO_PAGING_OPTS', build_options(paging_entry))
+    agi.set_variable(dv.PAGING_LINES, paging_line)
+    agi.set_variable(dv.PAGING_TIMEOUT, paging_entry.timeout)
+    agi.set_variable(dv.PAGING_OPTS, build_options(paging_entry))
 
 
 def build_options(paging):

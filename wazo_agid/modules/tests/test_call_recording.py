@@ -1,10 +1,12 @@
-# Copyright 2021-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2021-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
 
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
+
+from wazo_agid import dialplan_variables as dv
 
 from ..call_recording import record_caller
 
@@ -74,7 +76,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '',
+            dv.OUTCALL_ID: '',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -87,7 +89,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 
@@ -101,7 +103,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '1',
+            dv.OUTCALL_ID: '1',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -114,7 +116,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 
@@ -128,7 +130,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '1',
+            dv.OUTCALL_ID: '1',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -141,7 +143,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 
@@ -155,7 +157,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '1',
+            dv.OUTCALL_ID: '1',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -168,7 +170,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 
@@ -182,7 +184,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '',
+            dv.OUTCALL_ID: '',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -195,7 +197,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 
@@ -209,7 +211,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '1',
+            dv.OUTCALL_ID: '1',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -222,7 +224,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 
@@ -236,7 +238,7 @@ class TestRecordCaller(TestCase):
         agi_variables = {
             'WAZO_CALL_RECORD_ACTIVE': '',
             'WAZO_USERUUID': 'the-users-uuid',
-            'XIVO_OUTCALLID': '',
+            dv.OUTCALL_ID: '',
         }
         self.agi.get_variable.side_effect = agi_variables.get
         user.return_value = Mock(
@@ -249,7 +251,7 @@ class TestRecordCaller(TestCase):
         calls = [
             call('WAZO_CALL_RECORD_ACTIVE'),
             call('WAZO_USERUUID'),
-            call('XIVO_OUTCALLID'),
+            call(dv.OUTCALL_ID),
         ]
         self.agi.get_variable.assert_has_calls(calls)
 

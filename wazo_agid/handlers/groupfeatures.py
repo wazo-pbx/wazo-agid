@@ -9,7 +9,8 @@ from uuid import uuid4
 
 from psycopg2.sql import SQL
 
-from wazo_agid import dialplan_variables, objects
+from wazo_agid import dialplan_variables as dv
+from wazo_agid import objects
 from wazo_agid.handlers.handler import Handler
 from wazo_agid.objects import sanitize_aliased_column, sanitize_column
 
@@ -65,9 +66,9 @@ class GroupFeatures(Handler):
         return self._referer == f"group:{self._id}"
 
     def _set_members(self) -> None:
-        dst_id = self._agi.get_variable(dialplan_variables.DESTINATION_ID)
+        dst_id = self._agi.get_variable(dv.DESTINATION_ID)
         self._id = int(dst_id)
-        self._referer = self._agi.get_variable(dialplan_variables.FWD_REFERER)
+        self._referer = self._agi.get_variable(dv.FWD_REFERER)
 
         groupfeatures_columns = (
             'id',
@@ -129,8 +130,8 @@ class GroupFeatures(Handler):
         self._max_calls = res['queue_maxlen']
 
     def _set_vars(self) -> None:
-        self._agi.set_variable('XIVO_REAL_NUMBER', self._exten)
-        self._agi.set_variable('XIVO_REAL_CONTEXT', self._context)
+        self._agi.set_variable(dv.REAL_NUMBER, self._exten)
+        self._agi.set_variable(dv.REAL_CONTEXT, self._context)
         self._agi.set_variable('__WAZO_GROUPNAME', self._name)
         self._agi.set_variable('WAZO_GROUP_LABEL', self._label)
         self._agi.set_variable('WAZO_GROUP_STRATEGY', self._group_strategy)
@@ -172,19 +173,19 @@ class GroupFeatures(Handler):
                 options += "C"
 
         self._agi.set_variable('WAZO_GROUPOPTIONS', options)
-        self._agi.set_variable('XIVO_GROUPNEEDANSWER', needanswer)
+        self._agi.set_variable(dv.GROUPNEEDANSWER, needanswer)
 
     def _set_preprocess_subroutine(self) -> None:
         if self._preprocess_subroutine:
             self._agi.set_variable(
-                'XIVO_GROUPPREPROCESS_SUBROUTINE', self._preprocess_subroutine
+                dv.GROUPPREPROCESS_SUBROUTINE, self._preprocess_subroutine
             )
 
     def _set_timeout(self) -> None:
         if self._timeout:
-            self._agi.set_variable('XIVO_GROUPTIMEOUT', self._timeout)
+            self._agi.set_variable(dv.GROUP_TIMEOUT, self._timeout)
         else:
-            self._agi.set_variable('XIVO_GROUPTIMEOUT', "")
+            self._agi.set_variable(dv.GROUP_TIMEOUT, "")
 
         if self._user_timeout:
             self._agi.set_variable('WAZO_GROUP_USER_TIMEOUT', self._user_timeout)
@@ -208,16 +209,16 @@ class GroupFeatures(Handler):
         )
 
     def _set_schedule(self) -> None:
-        path = self._agi.get_variable('XIVO_PATH')
-        if path is None or len(path) == 0:
-            self._agi.set_variable('XIVO_PATH', 'group')
-            self._agi.set_variable('XIVO_PATH_ID', self._id)
+        path = self._agi.get_variable(dv.PATH)
+        if not path:
+            self._agi.set_variable(dv.PATH, 'group')
+            self._agi.set_variable(dv.PATH_ID, self._id)
 
     def _set_call_record_options(self) -> None:
         self._agi.set_variable('WAZO_CALL_RECORD_SIDE', 'caller')
         self._agi.set_variable('__WAZO_LOCAL_CHAN_MATCH_UUID', str(uuid4()))
         toggle_enabled = '1' if self._dtmf_record_toggle else '0'
         self._agi.set_variable(
-            f'__{dialplan_variables.GROUP_DTMF_RECORD_TOGGLE_ENABLED}',
+            f'__{dv.GROUP_DTMF_RECORD_TOGGLE_ENABLED}',
             toggle_enabled,
         )

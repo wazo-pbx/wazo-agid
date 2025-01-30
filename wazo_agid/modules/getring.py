@@ -1,4 +1,4 @@
-# Copyright 2006-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2006-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -9,6 +9,7 @@ from configparser import NoOptionError, RawConfigParser
 from psycopg2.extras import DictCursor
 
 from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
 
 CONFIG_FILE = "/etc/xivo/asterisk/xivo_ring.conf"
 CONFIG_PARSER: RawConfigParser = None  # type: ignore[assignment]
@@ -17,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 def getring(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
-    dstnum = agi.get_variable('XIVO_REAL_NUMBER')
-    context = agi.get_variable('XIVO_REAL_CONTEXT')
+    dstnum = agi.get_variable(dv.REAL_NUMBER)
+    context = agi.get_variable(dv.REAL_CONTEXT)
     origin = agi.get_variable('WAZO_CALLORIGIN')
     referer = agi.get_variable('WAZO_FWD_REFERER').split(':', 1)[0]
-    forwarded = agi.get_variable('XIVO_CALLFORWARDED')
+    forwarded = agi.get_variable(dv.CALLFORWARDED)
     # TODO: maybe replace number@context with user id in conf file ?
     dstnum_context = f"{dstnum}@{context}"
     referer_origin = f"{referer}@{origin}"
@@ -29,7 +30,7 @@ def getring(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
     referer_origin_fwd = f"{referer_origin}&forwarded"
     section = None
 
-    agi.set_variable('XIVO_RINGTYPE', "")
+    agi.set_variable(dv.RINGTYPE, "")
 
     if CONFIG_PARSER.has_option('number', f"!{dstnum_context}"):
         return
@@ -67,8 +68,8 @@ def getring(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
         logger.debug('Ring type exception', exc_info=True)
         agi.verbose("Using the native phone ring tone")
     else:
-        agi.set_variable('XIVO_RINGTYPE', ringtype)
-        agi.set_variable('XIVO_PHONETYPE', phonetype)
+        agi.set_variable(dv.RINGTYPE, ringtype)
+        agi.set_variable(dv.PHONETYPE, phonetype)
         agi.verbose(f"Using ring tone {ringtype}")
 
 

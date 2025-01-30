@@ -1,4 +1,4 @@
-# Copyright 2016-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2016-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -6,6 +6,7 @@ from __future__ import annotations
 import unittest
 from unittest.mock import Mock, call
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid.modules.phone_get_features import _set_current_forwards
 
 
@@ -28,12 +29,12 @@ class TestGetFeatures(unittest.TestCase):
 
         self._client.users(self._user_id).list_forwards.assert_called_once_with()
         expected_calls = [
-            call('XIVO_ENABLEBUSY', 1),
-            call('XIVO_DESTBUSY', '1234'),
-            call('XIVO_ENABLERNA', 0),
-            call('XIVO_DESTRNA', '5678'),
+            call(dv.ENABLEBUSY, 1),
+            call(dv.DESTBUSY, '1234'),
+            call(dv.ENABLERNA, 0),
+            call(dv.DESTRNA, '5678'),
             call('WAZO_ENABLEUNC', 0),
-            call('XIVO_DESTUNC', ''),
+            call(dv.DESTUNC, ''),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)
 
@@ -43,11 +44,11 @@ class TestGetFeatures(unittest.TestCase):
         _set_current_forwards(self._agi, self._user_id)
 
         expected_calls = [
-            call('XIVO_ENABLEBUSY', 0),
-            call('XIVO_DESTBUSY', ''),
-            call('XIVO_ENABLERNA', 0),
-            call('XIVO_DESTRNA', ''),
+            call(dv.ENABLEBUSY, 0),
+            call(dv.DESTBUSY, ''),
+            call(dv.ENABLERNA, 0),
+            call(dv.DESTRNA, ''),
             call('WAZO_ENABLEUNC', 0),
-            call('XIVO_DESTUNC', ''),
+            call(dv.DESTUNC, ''),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)

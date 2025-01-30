@@ -1,4 +1,4 @@
-# Copyright 2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2024-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
@@ -6,8 +6,8 @@ import re
 
 import phonenumbers
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid import objects
-from wazo_agid.dialplan_variables import SELECTED_CALLER_ID, TRUNK_CID_FORMAT
 from wazo_agid.handlers import handler
 
 VALID_PHONE_NUMBER_RE = re.compile(r'^\+?\d{3,15}$')
@@ -26,8 +26,8 @@ class CallerIDFormatter(handler.Handler):
         self.set_caller_id()
 
     def set_caller_id(self) -> None:
-        selected_cid = self._agi.get_variable(SELECTED_CALLER_ID)
-        cid_format = self._agi.get_variable(TRUNK_CID_FORMAT)
+        selected_cid = self._agi.get_variable(dv.SELECTED_CALLER_ID)
+        cid_format = self._agi.get_variable(dv.TRUNK_CID_FORMAT)
         tenant_country = self._agi.get_variable('WAZO_TENANT_COUNTRY')
 
         if not selected_cid:
@@ -89,7 +89,7 @@ class CallerIDFormatter(handler.Handler):
                 phonenumbers.PhoneNumberFormat.E164,
             )
         else:
-            self._agi.verbose(f'Unknown supported {TRUNK_CID_FORMAT} "{cid_format}"')
+            self._agi.verbose(f'Unknown supported {dv.TRUNK_CID_FORMAT} "{cid_format}"')
 
         self._set_caller_id(cid_name, formated_number)
 

@@ -1,4 +1,4 @@
-# Copyright 2016-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2016-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -6,6 +6,7 @@ from __future__ import annotations
 import unittest
 from unittest.mock import Mock, call
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid.modules.phone_set_feature import (
     _phone_set_busy,
     _phone_set_dnd,
@@ -33,8 +34,8 @@ class TestPhoneSetFeature(unittest.TestCase):
             'dnd', {'enabled': False}
         )
         expected_calls = [
-            call('XIVO_DNDENABLED', False),
-            call('XIVO_USERID_OWNER', self._user_id),
+            call(dv.DNDENABLED, False),
+            call(dv.USERID_OWNER, self._user_id),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)
 
@@ -50,8 +51,8 @@ class TestPhoneSetFeature(unittest.TestCase):
             'incallfilter', {'enabled': True}
         )
         expected_calls = [
-            call('XIVO_INCALLFILTERENABLED', True),
-            call('XIVO_USERID_OWNER', self._user_id),
+            call(dv.INCALLFILTERENABLED, True),
+            call(dv.USERID_OWNER, self._user_id),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)
 
@@ -64,8 +65,8 @@ class TestPhoneSetFeature(unittest.TestCase):
             'busy', {'enabled': True, 'destination': '123'}
         )
         expected_calls = [
-            call('XIVO_USERID_OWNER', self._user_id),
-            call('XIVO_BUSYENABLED', 1),
+            call(dv.USERID_OWNER, self._user_id),
+            call(dv.BUSYENABLED, 1),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)
 
@@ -86,8 +87,8 @@ class TestPhoneSetFeature(unittest.TestCase):
             'noanswer', {'enabled': False}
         )
         expected_calls = [
-            call('XIVO_USERID_OWNER', self._user_id),
-            call('XIVO_RNAENABLED', 0),
+            call(dv.USERID_OWNER, self._user_id),
+            call(dv.RNAENABLED, 0),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)
 
@@ -108,8 +109,8 @@ class TestPhoneSetFeature(unittest.TestCase):
             'unconditional', {'enabled': True, 'destination': '123'}
         )
         expected_calls = [
-            call('XIVO_USERID_OWNER', self._user_id),
-            call('XIVO_UNCENABLED', 1),
+            call(dv.USERID_OWNER, self._user_id),
+            call(dv.UNCENABLED, 1),
         ]
         self._agi.set_variable.assert_has_calls(expected_calls)
 

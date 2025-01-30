@@ -1,4 +1,4 @@
-# Copyright 2012-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2012-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -13,7 +13,8 @@ from xivo_dao.resources.line import dao as line_dao
 from xivo_dao.resources.line_extension import dao as line_extension_dao
 from xivo_dao.resources.user_line import dao as user_line_dao
 
-from wazo_agid import dialplan_variables, objects
+from wazo_agid import dialplan_variables as dv
+from wazo_agid import objects
 from wazo_agid.handlers.handler import Handler
 from wazo_agid.helpers import build_sip_interface
 from wazo_agid.objects import CallerID, DialAction
@@ -84,16 +85,16 @@ class UserFeatures(Handler):
                 self._agi.verbose(msg)
 
     def _set_members(self) -> None:
-        self._userid = self._agi.get_variable(dialplan_variables.USERID)
-        self._dstid = self._agi.get_variable(dialplan_variables.DESTINATION_ID)
+        self._userid = self._agi.get_variable(dv.USERID)
+        self._dstid = self._agi.get_variable(dv.DESTINATION_ID)
         self._destination_extension_id = self._agi.get_variable(
-            dialplan_variables.DESTINATION_EXTENSION_ID
+            dv.DESTINATION_EXTENSION_ID
         )
-        self._zone = self._agi.get_variable(dialplan_variables.CALL_ORIGIN)
-        self._srcnum = self._agi.get_variable(dialplan_variables.SOURCE_NUMBER)
-        self._dstnum = self._agi.get_variable(dialplan_variables.DESTINATION_NUMBER)
-        self._context = self._agi.get_variable(dialplan_variables.BASE_CONTEXT)
-        self._moh_uuid = self._agi.get_variable(dialplan_variables.USER_MOH)
+        self._zone = self._agi.get_variable(dv.CALL_ORIGIN)
+        self._srcnum = self._agi.get_variable(dv.SOURCE_NUMBER)
+        self._dstnum = self._agi.get_variable(dv.DESTINATION_NUMBER)
+        self._context = self._agi.get_variable(dv.BASE_CONTEXT)
+        self._moh_uuid = self._agi.get_variable(dv.USER_MOH)
         self._set_caller()
         self._set_line()
         self._set_user()
@@ -106,9 +107,7 @@ class UserFeatures(Handler):
                 self._caller = None
 
             if self._caller:
-                self._agi.set_variable(
-                    dialplan_variables.CALLER_SIMULTCALLS, self._caller.simultcalls
-                )
+                self._agi.set_variable(dv.CALLER_SIMULTCALLS, self._caller.simultcalls)
 
     def _set_line(self) -> None:
         if self._dstid:
@@ -142,7 +141,7 @@ class UserFeatures(Handler):
             except (ValueError, LookupError) as e:
                 self._agi.dp_break(str(e))
             else:
-                self._agi.set_variable('XIVO_DST_USERNUM', self.main_extension.exten)
+                self._agi.set_variable(dv.DST_USERNUM, self.main_extension.exten)
                 self._agi.set_variable(
                     'WAZO_DST_USER_CONTEXT', self.main_extension.context
                 )
@@ -153,8 +152,8 @@ class UserFeatures(Handler):
                 self._user = objects.User(self._agi, self._cursor, int(self._dstid))
             except (ValueError, LookupError) as e:
                 self._agi.dp_break(str(e))
-            self._set_xivo_user_name()
-            self._set_xivo_redirecting_info()
+            self._set_user_name()
+            self._set_redirecting_info()
             self._set_wazo_uuid()
 
     def _set_interfaces(self) -> None:
@@ -179,7 +178,7 @@ class UserFeatures(Handler):
     def _build_sip_interface(self, line):
         return build_sip_interface(self._agi, self._user.uuid, line.name)
 
-    def _set_xivo_user_name(self):
+    def _set_user_name(self):
         if self._user:
             wazo_dst_name = '{firstname} {lastname}'.format(
                 firstname=self._user.firstname if self._user.firstname else '',
@@ -192,7 +191,7 @@ class UserFeatures(Handler):
             self._agi.set_variable('WAZO_DST_UUID', self._user.uuid)
             self._agi.set_variable('WAZO_DST_TENANT_UUID', self._user.tenant_uuid)
 
-    def _set_xivo_redirecting_info(self) -> None:
+    def _set_redirecting_info(self) -> None:
         callerid_parsed = CallerID.parse(self._user.callerid)
         if callerid_parsed:
             callerid_name, callerid_num = callerid_parsed
@@ -202,14 +201,14 @@ class UserFeatures(Handler):
 
         if not callerid_name:
             callerid_name = f"{self._user.firstname} {self._user.lastname}"
-        self._agi.set_variable('XIVO_DST_REDIRECTING_NAME', callerid_name)
+        self._agi.set_variable(dv.DST_REDIRECTING_NAME, callerid_name)
 
         if not callerid_num:
             if self.main_extension:
                 callerid_num = self.main_extension.exten
             else:
                 callerid_num = self._dstnum
-        self._agi.set_variable('XIVO_DST_REDIRECTING_NUM', callerid_num)
+        self._agi.set_variable(dv.DST_REDIRECTING_NUM, callerid_num)
 
         confd_client = self._agi.config['confd']['client']
         try:
@@ -295,7 +294,7 @@ class UserFeatures(Handler):
 
         if strategy in ("bossfirst-simult", "bossfirst-serial", "all"):
             self._agi.set_variable(
-                dialplan_variables.CALLFILTER_BOSS_INTERFACE,
+                dv.CALLFILTER_BOSS_INTERFACE,
                 boss_interface,
             )
             self._set_callfilter_ringseconds(
@@ -325,9 +324,7 @@ class UserFeatures(Handler):
                     index += 1
 
         if strategy in ("bossfirst-simult", "secretary-simult", "all"):
-            self._agi.set_variable(
-                dialplan_variables.CALLFILTER_INTERFACE, '&'.join(ifaces)
-            )
+            self._agi.set_variable(dv.CALLFILTER_INTERFACE, '&'.join(ifaces))
             self._set_callfilter_ringseconds('TIMEOUT', callfilter.ringseconds)
 
         DialAction(
@@ -336,8 +333,8 @@ class UserFeatures(Handler):
         CallerID(self._agi, self._cursor, "callfilter", callfilter.id).rewrite(
             force_rewrite=True
         )
-        self._agi.set_variable(dialplan_variables.CALLFILTER, '1')
-        self._agi.set_variable(dialplan_variables.CALLFILTER_MODE, strategy)
+        self._agi.set_variable(dv.CALLFILTER, '1')
+        self._agi.set_variable(dv.CALLFILTER_MODE, strategy)
 
         return True
 
@@ -370,10 +367,10 @@ class UserFeatures(Handler):
             mailbox_context = self._user.vmbox.context
             if self._user.vmbox.email:
                 useremail = self._user.vmbox.email
-        self._agi.set_variable('XIVO_ENABLEVOICEMAIL', self._user.enablevoicemail)
-        self._agi.set_variable('XIVO_MAILBOX', mailbox)
-        self._agi.set_variable('XIVO_MAILBOX_CONTEXT', mailbox_context)
-        self._agi.set_variable('XIVO_USEREMAIL', useremail)
+        self._agi.set_variable(dv.ENABLEVOICEMAIL, self._user.enablevoicemail)
+        self._agi.set_variable(dv.MAILBOX, mailbox)
+        self._agi.set_variable(dv.MAILBOX_CONTEXT, mailbox_context)
+        self._agi.set_variable(dv.USEREMAIL, useremail)
 
     def _set_vmbox_lang(self):
         vmbox = self._user.vmbox
@@ -387,7 +384,7 @@ class UserFeatures(Handler):
             mbox_lang = vmbox.language
         elif self._user.language:
             mbox_lang = self._user.language
-        self._agi.set_variable('XIVO_MAILBOX_LANGUAGE', mbox_lang)
+        self._agi.set_variable(dv.MAILBOX_LANGUAGE, mbox_lang)
 
     def _set_mobile_number(self):
         if self._user.mobilephonenumber:
@@ -456,9 +453,7 @@ class UserFeatures(Handler):
             self._agi.set_variable(name, '')
 
     def _set_callee_simultcalls(self):
-        return self._agi.set_variable(
-            dialplan_variables.CALLEE_SIMULTCALLS, self._user.simultcalls
-        )
+        return self._agi.set_variable(dv.CALLEE_SIMULTCALLS, self._user.simultcalls)
 
     def _set_enablednd(self):
         self._agi.set_variable('WAZO_ENABLEDND', self._user.enablednd)
@@ -512,11 +507,11 @@ class UserFeatures(Handler):
 
     def _setrna(self):
         if self._set_rna_from_exten() or self._set_rna_from_dialaction():
-            self._agi.set_variable('XIVO_ENABLERNA', True)
+            self._agi.set_variable(dv.ENABLERNA, True)
 
     def _setbusy(self):
         if self._set_rbusy_from_exten() or self._set_rbusy_from_dialaction():
-            self._agi.set_variable('XIVO_ENABLEBUSY', True)
+            self._agi.set_variable(dv.ENABLEBUSY, True)
 
     def _set_enableunc(self):
         if self._user.enableunc:

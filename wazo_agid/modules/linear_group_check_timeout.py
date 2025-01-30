@@ -1,4 +1,4 @@
-# Copyright 2018-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2018-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -8,6 +8,7 @@ import time
 from typing import TYPE_CHECKING
 
 from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
 
 if TYPE_CHECKING:
     from psycopg2.extras import DictCursor
@@ -23,8 +24,8 @@ def linear_group_check_timeout(
 ) -> None:
     group_id = agi.get_variable('WAZO_DSTID')
 
-    if not (_group_timeout := agi.get_variable('XIVO_GROUPTIMEOUT')):
-        logger.info('XIVO_GROUPTIMEOUT not set for group %s', group_id)
+    if not (_group_timeout := agi.get_variable(dv.GROUP_TIMEOUT)):
+        logger.info('%s not set for group %s', dv.GROUP_TIMEOUT, group_id)
         group_timeout = 0
     else:
         group_timeout = int(_group_timeout)

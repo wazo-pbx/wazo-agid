@@ -1,4 +1,4 @@
-# Copyright 2018-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2018-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -10,6 +10,7 @@ from xivo_dao.alchemy.queueskillrule import QueueSkillRule
 from xivo_dao.helpers.db_utils import session_scope
 
 from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
 
 
 def queue_skill_rule_set(
@@ -19,7 +20,7 @@ def queue_skill_rule_set(
     options = actionarg2.split(';') if actionarg2 else []
 
     timeout = ''
-    call = agi.get_variable('XIVO_QUEUESKILLRULESET')
+    call = agi.get_variable(dv.QUEUESKILLRULESET)
     skill_rule_id: str | None = None
     skill_rule_variables: str | None = None
 
@@ -57,7 +58,7 @@ def queue_skill_rule_set(
 
 
 def _set_variables(agi: agid.FastAGI, call: str, timeout: str) -> None:
-    agi.set_variable('XIVO_QUEUESKILLRULESET', call)
+    agi.set_variable(dv.QUEUESKILLRULESET, call)
     agi.set_variable('ARG2_TIMEOUT', timeout)
 
 

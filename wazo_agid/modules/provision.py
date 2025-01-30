@@ -1,4 +1,4 @@
-# Copyright 2011-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2011-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -7,6 +7,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
 
 if TYPE_CHECKING:
     from psycopg2.extras import DictCursor
@@ -55,7 +56,7 @@ def provision(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
     except Exception as e:
         logger.error('Error during provisioning: %s', e)
     else:
-        agi.set_variable('XIVO_PROV_OK', '1')
+        agi.set_variable(dv.PROV_OK, '1')
 
 
 agid.register(provision)

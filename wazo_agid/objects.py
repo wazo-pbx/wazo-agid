@@ -12,6 +12,7 @@ from psycopg2.extras import DictCursor, DictRow
 from psycopg2.sql import SQL, Composable, Identifier
 from xivo_dao import user_dao
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid.schedule import (
     AlwaysOpenedSchedule,
     Schedule,
@@ -570,7 +571,7 @@ class Queue:
         action = DialAction(self.agi, self.cursor, 'noanswer', "queue", self.id)
         action.set_variables()
         if action.action in ['voicemail', 'sound']:
-            self.agi.set_variable("XIVO_QUEUELOG_EVENT", "REROUTEGUIDE")
+            self.agi.set_variable(dv.QUEUELOG_EVENT, "REROUTEGUIDE")
 
     def rewrite_cid(self):
         CallerID(self.agi, self.cursor, "queue", self.id).rewrite(force_rewrite=False)
@@ -662,18 +663,18 @@ class DialAction:
         agi, event, category, action, actionarg1, actionarg2, isda=True
     ):
         xtype = f"{category}_{event}".upper()
-        agi.set_variable(f"XIVO_FWD_{xtype}_ACTION", action)
+        agi.set_variable(f"WAZO_FWD_{xtype}_ACTION", action)
 
         # Sometimes, it's useful to know whether these variables were
         # set manually, or by this object.
         if isda:
-            agi.set_variable(f"XIVO_FWD_{xtype}_ISDA", "1")
+            agi.set_variable(f"WAZO_FWD_{xtype}_ISDA", "1")
 
         action_arg_1 = actionarg1.replace('|', ';') if actionarg1 else ""
         action_arg_2 = actionarg2 or ""
 
-        agi.set_variable(f"XIVO_FWD_{xtype}_ACTIONARG1", action_arg_1)
-        agi.set_variable(f"XIVO_FWD_{xtype}_ACTIONARG2", action_arg_2)
+        agi.set_variable(f"WAZO_FWD_{xtype}_ACTIONARG1", action_arg_1)
+        agi.set_variable(f"WAZO_FWD_{xtype}_ACTIONARG2", action_arg_2)
 
     def __init__(self, agi, cursor: DictCursor, event, category, categoryval):
         self.agi = agi
@@ -1127,21 +1128,21 @@ class CallerID:
     def rewrite(self, force_rewrite):
         """
         Set/Modify the caller ID if needed and allowed and create
-        the XIVO_CID_REWRITTEN channel variable in some cases.
+        the WAZO_CID_REWRITTEN channel variable in some cases.
 
         @force_rewrite:
             True <=> CID modification is always allowed in this case.
-                XIVO_CID_REWRITTEN is neither taken into account nor
+                WAZO_CID_REWRITTEN is neither taken into account nor
                 written.
             False <=> CID modification is only allowed if the channel
-                variable XIVO_CID_REWRITTEN is not set prior to the
+                variable WAZO_CID_REWRITTEN is not set prior to the
                 call to this method.  If the CID modification really
-                took place, XIVO_CID_REWRITTEN is created.
+                took place, WAZO_CID_REWRITTEN is created.
         """
         if not self.mode:
             return
 
-        cidrewritten = self.agi.get_variable('XIVO_CID_REWRITTEN')
+        cidrewritten = self.agi.get_variable(dv.CID_REWRITTEN)
 
         if force_rewrite or not cidrewritten:
             calleridname = self.agi.get_variable('CALLERID(name)')
@@ -1177,7 +1178,7 @@ class CallerID:
             self.agi.set_variable('CALLERID(all)', f'"{name}" <{calleridnum}>')
 
             if not force_rewrite:
-                self.agi.set_variable('XIVO_CID_REWRITTEN', 1)
+                self.agi.set_variable(dv.CID_REWRITTEN, 1)
 
 
 class ChanSIP:

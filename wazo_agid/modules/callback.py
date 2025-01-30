@@ -1,4 +1,4 @@
-# Copyright 2006-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2006-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -10,6 +10,7 @@ import time
 from psycopg2.extras import DictCursor
 
 from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
 from wazo_agid.fastagi import FastAGI
 
 ASTERISK_UID: int = None  # type: ignore[assignment]
@@ -40,8 +41,8 @@ def callback(agi: FastAGI, cursor: DictCursor, args: list):
             "RetryTime: 30\n"
             "WaitTime: 30\n"
             f"CallerID: {srcnum}\n"
-            f"Set: XIVO_DISACONTEXT={context}\n"
-            "Context: xivo-callbackdisa\n"
+            f"Set: {dv.DISACONTEXT}={context}\n"
+            "Context: wazo-callbackdisa\n"
             "Extension: s"
         )
 

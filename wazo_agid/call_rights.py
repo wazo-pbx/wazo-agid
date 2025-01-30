@@ -1,8 +1,10 @@
-# Copyright 2006-2023 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2006-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 import logging
 import re
+
+from wazo_agid import dialplan_variables as dv
 
 logger = logging.getLogger(__name__)
 
@@ -26,15 +28,15 @@ class RuleAppliedException(Exception):
 
 
 def allow(agi):
-    agi.set_variable('XIVO_AUTHORIZATION', "ALLOW")
+    agi.set_variable(dv.AUTHORIZATION, "ALLOW")
     raise RuleAppliedException()
 
 
 def deny(agi, password):
     if password:
-        agi.set_variable('XIVO_PASSWORD', password)
+        agi.set_variable(dv.PASSWORD, password)
 
-    agi.set_variable('XIVO_AUTHORIZATION', "DENY")
+    agi.set_variable(dv.AUTHORIZATION, "DENY")
     raise RuleAppliedException()
 
 

@@ -1,11 +1,13 @@
-# Copyright 2006-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2006-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from wazo_agid import agid, objects
+from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
+from wazo_agid import objects
 
 if TYPE_CHECKING:
     from psycopg2.extras import DictCursor
@@ -41,9 +43,9 @@ def user_get_vmbox(agi: FastAGI, cursor: DictCursor, args: list[str]) -> None:
     else:
         vmmain_options = ""
 
-    agi.set_variable('XIVO_VMMAIN_OPTIONS', vmmain_options)
-    agi.set_variable('XIVO_MAILBOX', user.vmbox.mailbox)
-    agi.set_variable('XIVO_MAILBOX_CONTEXT', user.vmbox.context)
+    agi.set_variable(dv.VMMAIN_OPTIONS, vmmain_options)
+    agi.set_variable(dv.MAILBOX, user.vmbox.mailbox)
+    agi.set_variable(dv.MAILBOX_CONTEXT, user.vmbox.context)
     if user.vmbox.password:
         agi.set_variable('WAZO_VM_PASSWORD', user.vmbox.password)
 

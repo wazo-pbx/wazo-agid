@@ -1,4 +1,4 @@
-# Copyright 2009-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2009-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -6,7 +6,9 @@ from __future__ import annotations
 from psycopg2.extras import DictCursor
 from xivo.xivo_helpers import split_extension
 
-from wazo_agid import agid, objects
+from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
+from wazo_agid import objects
 
 
 def phone_progfunckey(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
@@ -33,8 +35,8 @@ def phone_progfunckey(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) ->
         feature = ""
         agi.verbose(str(e))
 
-    agi.set_variable('XIVO_PHONE_PROGFUNCKEY', ''.join(fklist[1:]))
-    agi.set_variable('XIVO_PHONE_PROGFUNCKEY_FEATURE', feature)
+    agi.set_variable(dv.PHONE_PROGFUNCKEY, ''.join(fklist[1:]))
+    agi.set_variable(dv.PHONE_PROGFUNCKEY_FEATURE, feature)
 
 
 agid.register(phone_progfunckey)

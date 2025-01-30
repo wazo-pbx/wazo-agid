@@ -1,4 +1,4 @@
-# Copyright 2012-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2012-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -11,10 +11,11 @@ from wazo_dird_client.client import DirdClient
 from xivo_dao.resources.directory_profile import dao as directory_profile_dao
 
 from wazo_agid import agid
+from wazo_agid import dialplan_variables as dv
 
 logger = logging.getLogger(__name__)
 
-FAKE_XIVO_USER_UUID = '00000000-0000-0000-0000-000000000000'
+FAKE_WAZO_USER_UUID = '00000000-0000-0000-0000-000000000000'
 
 
 def callerid_forphones(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -> None:
@@ -29,12 +30,12 @@ def callerid_forphones(agi: agid.FastAGI, cursor: DictCursor, args: list[str]) -
         if not _should_reverse_lookup(cid_name, cid_number):
             return
 
-        incall_id = int(agi.get_variable('XIVO_INCALL_ID'))
+        incall_id = int(agi.get_variable(dv.INCALL_ID))
         callee_info = directory_profile_dao.find_by_incall_id(incall_id)
         if callee_info is None:
-            user_uuid = FAKE_XIVO_USER_UUID
+            user_uuid = FAKE_WAZO_USER_UUID
         else:
-            user_uuid = callee_info.xivo_user_uuid
+            user_uuid = callee_info.user_uuid
 
         tenant_uuid = agi.get_variable('WAZO_TENANT_UUID')
         # It is not possible to associate a profile to a reverse configuration in the web
@@ -82,7 +83,7 @@ def _set_new_caller_id(agi: agid.FastAGI, display_name: str, cid_number: str) ->
 
 
 def _set_reverse_lookup_variable(agi: agid.FastAGI, fields: dict[str, str]) -> None:
-    agi.set_variable("XIVO_REVERSE_LOOKUP", _create_reverse_lookup_variable(fields))
+    agi.set_variable(dv.REVERSE_LOOKUP, _create_reverse_lookup_variable(fields))
 
 
 def _create_reverse_lookup_variable(fields: dict[str, str]) -> str:

@@ -1,4 +1,4 @@
-# Copyright 2013-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2013-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -7,6 +7,7 @@ import datetime
 import unittest
 from unittest.mock import Mock, call
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid.schedule import (
     DaysChecker,
     HoursChecker,
@@ -298,7 +299,7 @@ class TestScheduleAction(unittest.TestCase):
         action.set_variables_in_agi(agi)
 
         expected_call_args = [
-            call('XIVO_FWD_SCHEDULE_OUT_ACTION', 'foo'),
-            call('XIVO_FWD_SCHEDULE_OUT_ACTIONARG1', 'bar'),
+            call(dv.FWD_SCHEDULE_OUT_ACTION, 'foo'),
+            call(dv.FWD_SCHEDULE_OUT_ACTIONARG1, 'bar'),
         ]
         self.assertEqual(expected_call_args, agi.set_variable.call_args_list)

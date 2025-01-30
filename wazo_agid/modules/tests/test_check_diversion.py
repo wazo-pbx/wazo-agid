@@ -1,4 +1,4 @@
-# Copyright 2013-2024 The Wazo Authors  (see the AUTHORS file)
+# Copyright 2013-2025 The Wazo Authors  (see the AUTHORS file)
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 from __future__ import annotations
@@ -8,6 +8,7 @@ from unittest.mock import ANY, Mock, call, patch
 
 from hamcrest import assert_that, equal_to
 
+from wazo_agid import dialplan_variables as dv
 from wazo_agid.modules import check_diversion
 
 
@@ -60,7 +61,7 @@ class TestCheckDiversion(unittest.TestCase):
         self.assertFalse(result)
 
     @patch('wazo_agid.modules.check_diversion.objects')
-    def test_check_diversion_xivo_divert_event_is_cleared(self, mock_objects):
+    def test_check_diversion_divert_event_is_cleared(self, mock_objects):
         self.queue.waittime = None
         self.queue.waitratio = None
         mock_objects.Queue.return_value = self.queue
@@ -68,5 +69,5 @@ class TestCheckDiversion(unittest.TestCase):
 
         check_diversion.check_diversion(self.agi, self.cursor, [])
 
-        expected = [call('XIVO_DIVERT_EVENT', ''), call('WAZO_FWD_TYPE', ANY)]
+        expected = [call(dv.DIVERT_EVENT, ''), call('WAZO_FWD_TYPE', ANY)]
         assert_that(self.agi.set_variable.call_args_list, equal_to(expected))
