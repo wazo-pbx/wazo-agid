@@ -300,7 +300,7 @@ def test_callback(base_asset: BaseAssetLaunchingHelper):
         WaitTime: 30
         CallerID: {extension_number}
         Set: {dv.DISACONTEXT}={context}
-        Context: xivo-callbackdisa
+        Context: wazo-callbackdisa
         Extension: s
         '''
     ).strip('\n')

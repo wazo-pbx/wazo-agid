@@ -42,7 +42,7 @@ def callback(agi: FastAGI, cursor: DictCursor, args: list):
             "WaitTime: 30\n"
             f"CallerID: {srcnum}\n"
             f"Set: {dv.DISACONTEXT}={context}\n"
-            "Context: xivo-callbackdisa\n"
+            "Context: wazo-callbackdisa\n"
             "Extension: s"
         )
 
