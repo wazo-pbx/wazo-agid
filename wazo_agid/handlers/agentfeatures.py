@@ -37,7 +37,7 @@ class AgentFeatures(Handler):
 
     def _set_agent_interface(self) -> None:
         try:
-            self._agi.set_variable('XIVO_AGENT_INTERFACE', self._get_agent_device())
+            self._agi.set_variable(dv.AGENT_INTERFACE, self._get_agent_device())
         except LookupError as e:
             self._agi.dp_break(e)
 

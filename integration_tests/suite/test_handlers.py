@@ -743,7 +743,7 @@ def test_incoming_agent_set_features(base_asset: BaseAssetLaunchingHelper):
         agent['id'], variables=variables
     )
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENT_INTERFACE'] == 'test-device'
+    assert recv_vars[dv.AGENT_INTERFACE] == 'test-device'
     assert recv_vars[dv.AGENTPREPROCESS_SUBROUTINE] == 'test-subroutine'
     assert recv_vars[dv.QUEUECALLOPTIONS] == 'hitwxk'
 
