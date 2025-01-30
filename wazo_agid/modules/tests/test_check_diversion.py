@@ -61,7 +61,7 @@ class TestCheckDiversion(unittest.TestCase):
         self.assertFalse(result)
 
     @patch('wazo_agid.modules.check_diversion.objects')
-    def test_check_diversion_xivo_divert_event_is_cleared(self, mock_objects):
+    def test_check_diversion_divert_event_is_cleared(self, mock_objects):
         self.queue.waittime = None
         self.queue.waitratio = None
         mock_objects.Queue.return_value = self.queue
