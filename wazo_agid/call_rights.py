@@ -34,7 +34,7 @@ def allow(agi):
 
 def deny(agi, password):
     if password:
-        agi.set_variable('XIVO_PASSWORD', password)
+        agi.set_variable(dv.PASSWORD, password)
 
     agi.set_variable(dv.AUTHORIZATION, "DENY")
     raise RuleAppliedException()
