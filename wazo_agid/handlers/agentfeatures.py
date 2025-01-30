@@ -63,7 +63,7 @@ class AgentFeatures(Handler):
             preprocess_subroutine = self.agent.preprocess_subroutine
         else:
             preprocess_subroutine = ''
-        self._agi.set_variable('XIVO_AGENTPREPROCESS_SUBROUTINE', preprocess_subroutine)
+        self._agi.set_variable(dv.AGENTPREPROCESS_SUBROUTINE, preprocess_subroutine)
 
     def _set_queue_call_options(self) -> None:
         queue_options = self._agi.get_variable('WAZO_QUEUEOPTIONS')

@@ -250,7 +250,7 @@ def test_agent_login(base_asset: BaseAssetLaunchingHelper):
     )
 
     assert recv_cmds['FAILURE'] is False
-    assert recv_vars['XIVO_AGENTSTATUS'] == 'logged'
+    assert recv_vars[dv.AGENTSTATUS] == 'logged'
 
     assert base_asset.agentd.verify_agent_login_called(agent['id']) is True
 
@@ -744,7 +744,7 @@ def test_incoming_agent_set_features(base_asset: BaseAssetLaunchingHelper):
     )
     assert recv_cmds['FAILURE'] is False
     assert recv_vars['XIVO_AGENT_INTERFACE'] == 'test-device'
-    assert recv_vars['XIVO_AGENTPREPROCESS_SUBROUTINE'] == 'test-subroutine'
+    assert recv_vars[dv.AGENTPREPROCESS_SUBROUTINE] == 'test-subroutine'
     assert recv_vars[dv.QUEUECALLOPTIONS] == 'hitwxk'
 
 

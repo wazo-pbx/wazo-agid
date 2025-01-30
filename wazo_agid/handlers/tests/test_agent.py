@@ -34,7 +34,7 @@ class TestAgent(unittest.TestCase):
         self.agentd_client.agents.login_agent.assert_called_once_with(
             self.agent_id, self.extension, self.context, tenant_uuid=self.tenant
         )
-        self.agi.set_variable.assert_called_once_with(agent.AGENTSTATUS_VAR, 'logged')
+        self.agi.set_variable.assert_called_once_with(dv.AGENTSTATUS, 'logged')
 
     def test_login_agent_on_already_logged(self):
         self.agentd_client.agents.login_agent.side_effect = AgentdClientError(
@@ -49,9 +49,7 @@ class TestAgent(unittest.TestCase):
             tenant_uuid=self.tenant,
         )
 
-        self.agi.set_variable.assert_called_once_with(
-            agent.AGENTSTATUS_VAR, 'already_logged'
-        )
+        self.agi.set_variable.assert_called_once_with(dv.AGENTSTATUS, 'already_logged')
 
     def test_login_agent_on_already_in_use(self):
         self.agentd_client.agents.login_agent.side_effect = AgentdClientError(
@@ -66,9 +64,7 @@ class TestAgent(unittest.TestCase):
             tenant_uuid=self.tenant,
         )
 
-        self.agi.set_variable.assert_called_once_with(
-            agent.AGENTSTATUS_VAR, 'already_in_use'
-        )
+        self.agi.set_variable.assert_called_once_with(dv.AGENTSTATUS, 'already_in_use')
 
     def test_login_agent_on_other_error(self):
         self.agentd_client.agents.login_agent.side_effect = AgentdClientError('foobar')

@@ -9,8 +9,6 @@ from wazo_agentd_client.error import AgentdClientError
 from wazo_agid import dialplan_variables as dv
 from wazo_agid.fastagi import FastAGI
 
-AGENTSTATUS_VAR = 'XIVO_AGENTSTATUS'
-
 
 def login_agent(
     agi: FastAGI, agent_id: int, extension: str, context: str, tenant_uuid: str
@@ -22,13 +20,13 @@ def login_agent(
         )
     except AgentdClientError as e:
         if e.error == error.ALREADY_LOGGED:
-            agi.set_variable(AGENTSTATUS_VAR, 'already_logged')
+            agi.set_variable(dv.AGENTSTATUS, 'already_logged')
         elif e.error == error.ALREADY_IN_USE:
-            agi.set_variable(AGENTSTATUS_VAR, 'already_in_use')
+            agi.set_variable(dv.AGENTSTATUS, 'already_in_use')
         else:
             raise
     else:
-        agi.set_variable(AGENTSTATUS_VAR, 'logged')
+        agi.set_variable(dv.AGENTSTATUS, 'logged')
 
 
 def logoff_agent(agi: FastAGI, agent_id: int, tenant_uuid: str) -> None:
