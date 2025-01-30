@@ -83,7 +83,7 @@ def _phone_set_vm(agi, cursor, args):
 
     user.toggle_feature('enablevoicemail')
 
-    agi.set_variable('XIVO_VMENABLED', user.enablevoicemail)
+    agi.set_variable(dv.VMENABLED, user.enablevoicemail)
     agi.set_variable(dv.USERID_OWNER, user.id)
 
 
