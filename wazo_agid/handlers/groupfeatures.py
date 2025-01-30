@@ -178,7 +178,7 @@ class GroupFeatures(Handler):
     def _set_preprocess_subroutine(self) -> None:
         if self._preprocess_subroutine:
             self._agi.set_variable(
-                'XIVO_GROUPPREPROCESS_SUBROUTINE', self._preprocess_subroutine
+                dv.GROUPPREPROCESS_SUBROUTINE, self._preprocess_subroutine
             )
 
     def _set_timeout(self) -> None:
